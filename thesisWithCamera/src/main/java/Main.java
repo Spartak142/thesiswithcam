@@ -1,15 +1,15 @@
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifier;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifiers;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /*
         To do list:
@@ -45,11 +45,8 @@ public class Main {
         //ArrayList<ClassifiedObject> cameratest = Methods.classifyCamera();
 
         System.out.println(getClassifiers().toString());
+        
 
-        
-        
-        FolderZiper.zipFolder("C:\\Users\\Robin\\Desktop\\zip", "C:\\Users\\Robin\\Desktop\\zip.zip");
-        
     }
 
     public static ArrayList<String> getClassifiers() {
@@ -63,7 +60,7 @@ public class Main {
                 .verbose(true)
                 .build();
         Classifiers classifiers = service.listClassifiers(listClassifiersOptions).execute();
-
+        System.out.println(classifiers);
         ArrayList<String> result = new ArrayList<>();
         for (com.ibm.watson.developer_cloud.visual_recognition.v3.model.Class c : classifiers.getClassifiers().get(0).getClasses()) {
             result.add(c.getClassName());
@@ -71,5 +68,34 @@ public class Main {
 
         return result;
     }
+
+    public static void getClassifierDetails(String classifier) {
+        IamOptions options = new IamOptions.Builder()
+                .apiKey(apikey)
+                .build();
+
+        VisualRecognition service = new VisualRecognition("2018-03-19", options);
+
+        GetClassifierOptions getClassifierOptions = new GetClassifierOptions.Builder(classifier).build();
+        Classifier classifierDetails = service.getClassifier(getClassifierOptions).execute();
+        System.out.println(classifierDetails);
+    }
+
+    /*public static void updateCLassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
+        IamOptions options = new IamOptions.Builder()
+                .apiKey(apikey)
+                .build();
+
+        VisualRecognition service = new VisualRecognition("2018-03-19", options);
+
+        UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
+                .classifierId("DefaultCustomModel_973098667")
+                .addPositiveExamples("asd", new File(positiveExamplesPathZip))
+                .build();
+
+        Classifier updatedClassifier = service.updateClassifier(updateClassifierOptions).execute();
+        System.out.println(updatedClassifier);
+
+    }*/
 
 }

@@ -36,7 +36,7 @@ public class Main {
         Webcam webcam = Webcam.getDefault();
         webcam.open();
         
-        
+       System.out.println("Tjena bror!");
         System.out.println("Type 'takepic' to take a picture and analyse it.");
         while (true) {
             

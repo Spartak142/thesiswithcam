@@ -1,25 +1,28 @@
-
 import com.github.sarxos.webcam.Webcam;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifier;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifiers;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 
@@ -33,28 +36,40 @@ import javax.imageio.ImageIO;
  *
  * @author Robin
  */
-public class Methods {
-final static String apikey= "arK3RfX0XWFFUdA_ES6TZ8-Yb1bnC-sTeNxo4BEAm1Jy";
-    static IamOptions options = new IamOptions.Builder()
-            .apiKey(apikey)
+
+
+public class Methods{
+    
+    
+    public static IamOptions options = new IamOptions.Builder()
+            .apiKey(apikey())
             .build();
 
-    static VisualRecognition service = new VisualRecognition("2018-03-19", options);
+    public static VisualRecognition service = new VisualRecognition("2018-03-19", options);
 
     public static void main(String[] args) throws FileNotFoundException {
-        String path = "C:/Users/Robin/Desktop/Skolarbete/Thesis/Data/mango/61TbBBpszTL._SX425_.jpg";
-        System.out.println(classifyImage(path));
+        
+    }
+    
+    
+    //For safety reasons
+    public static String apikey (){
+        BufferedReader apikey = null;
+        try {
+            apikey = new BufferedReader(new FileReader("C:\\Users\\Robin\\Desktop\\Skolarbete\\Thesis\\key.txt"));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Methods.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            return apikey.readLine();
+        } catch (IOException ex) {
+            Logger.getLogger(Methods.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "null";
     }
 
     public static ArrayList<ClassifiedObject> classifyImage(String path) throws FileNotFoundException {
-        
-        /*
-        URL url = new URL("https://images-na.ssl-images-amazon.com/images/I/71gI-IUNUkL._SY355_.jpg");
-        Image image = ImageIO.read(url);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write((RenderedImage) image,"jpg", os); 
-        InputStream fis = new ByteArrayInputStream(os.toByteArray());
-        */
+   
         
         InputStream imagesStream = new FileInputStream(path);
         ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
@@ -127,5 +142,28 @@ final static String apikey= "arK3RfX0XWFFUdA_ES6TZ8-Yb1bnC-sTeNxo4BEAm1Jy";
         
         return resultArray;
     }
+    
+        public static ArrayList<String> getClassifiers() {
+
+        ListClassifiersOptions listClassifiersOptions = new ListClassifiersOptions.Builder()
+                .verbose(true)
+                .build();
+        Classifiers classifiers = service.listClassifiers(listClassifiersOptions).execute();
+  
+        ArrayList<String> result = new ArrayList<>();
+        for (com.ibm.watson.developer_cloud.visual_recognition.v3.model.Class c : classifiers.getClassifiers().get(0).getClasses()) {
+            result.add(c.getClassName());
+        }
+
+        return result;
+    }
+
+    public static void getClassifierDetails(String classifier) {
+
+        GetClassifierOptions getClassifierOptions = new GetClassifierOptions.Builder(classifier).build();
+        Classifier classifierDetails = service.getClassifier(getClassifierOptions).execute();
+        System.out.println(classifierDetails);
+    }
+    
 
 }

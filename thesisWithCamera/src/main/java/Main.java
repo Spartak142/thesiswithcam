@@ -6,9 +6,12 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifiers;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /*
@@ -33,53 +36,25 @@ import java.util.ArrayList;
  */
 public class Main {
 
-    final static String apikey = "arK3RfX0XWFFUdA_ES6TZ8-Yb1bnC-sTeNxo4BEAm1Jy";
+    //final static String apikey = "arK3RfX0XWFFUdA_ES6TZ8-Yb1bnC-sTeNxo4BEAm1Jy";
 
+    
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
         //SimpleUI ui=new SimpleUI();
         //ui.setVisible(true);
-
+       
         String path = "C:/Users/Robin/Desktop/Skolarbete/Thesis/Data/mango/images.jpg";
+        
         //ArrayList<ClassifiedObject> test = Methods.classifyImage(path);
         //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
         //ArrayList<ClassifiedObject> cameratest = Methods.classifyCamera();
 
-        System.out.println(getClassifiers().toString());
+        System.out.println(Methods.getClassifiers().toString());
         
 
     }
 
-    public static ArrayList<String> getClassifiers() {
-        IamOptions options = new IamOptions.Builder()
-                .apiKey(apikey)
-                .build();
 
-        VisualRecognition service = new VisualRecognition("2018-03-19", options);
-
-        ListClassifiersOptions listClassifiersOptions = new ListClassifiersOptions.Builder()
-                .verbose(true)
-                .build();
-        Classifiers classifiers = service.listClassifiers(listClassifiersOptions).execute();
-        System.out.println(classifiers);
-        ArrayList<String> result = new ArrayList<>();
-        for (com.ibm.watson.developer_cloud.visual_recognition.v3.model.Class c : classifiers.getClassifiers().get(0).getClasses()) {
-            result.add(c.getClassName());
-        }
-
-        return result;
-    }
-
-    public static void getClassifierDetails(String classifier) {
-        IamOptions options = new IamOptions.Builder()
-                .apiKey(apikey)
-                .build();
-
-        VisualRecognition service = new VisualRecognition("2018-03-19", options);
-
-        GetClassifierOptions getClassifierOptions = new GetClassifierOptions.Builder(classifier).build();
-        Classifier classifierDetails = service.getClassifier(getClassifierOptions).execute();
-        System.out.println(classifierDetails);
-    }
 
     //THIS SHIT IS DOES NOT WORK
     /*public static void updateCLassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
@@ -90,7 +65,7 @@ public class Main {
         VisualRecognition service = new VisualRecognition("2018-03-19", options);
 
         UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
-                .classifierId("DefaultCustomModel_973098667")
+                .classifierId("DefaultCustomModel_1716876290")
                 .addPositiveExamples("asd", new File(positiveExamplesPathZip))
                 .build();
 

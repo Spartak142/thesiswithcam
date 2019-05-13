@@ -45,7 +45,7 @@ public class Methods {
 
     public static VisualRecognition service = new VisualRecognition("2018-03-19", options);
 
-    //For safety reasons
+    //For safety reasons, reading API key from path
     public static String apikey() {
         BufferedReader apikey = null;
         try {
@@ -60,7 +60,7 @@ public class Methods {
         }
         return "null";
     }
-
+    //Classify image from path
     public static ArrayList<ClassifiedObject> classifyImage(String path) throws FileNotFoundException {
         InputStream imagesStream = new FileInputStream(path);
         ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
@@ -73,7 +73,7 @@ public class Methods {
         ClassifiedImages result = service.classify(classifyOptions).execute();
         return JSONToArray(result);
     }
-
+    //Classify image from URL
     public static ArrayList<ClassifiedObject> classifyURL(String adress) throws FileNotFoundException, IOException {
 
         URL url = new URL(adress);
@@ -93,7 +93,7 @@ public class Methods {
 
         return JSONToArray(result);
     }
-
+    //Classify image from camera
     public static ArrayList<ClassifiedObject> classifyCamera() throws FileNotFoundException, IOException {
 
         Webcam webcam = Webcam.getDefault();
@@ -116,17 +116,16 @@ public class Methods {
         return JSONToArray(result);
     }
 
+    //Takes the classify json and puts the data to an arraylist
     public static ArrayList<ClassifiedObject> JSONToArray(ClassifiedImages ci) {
         ArrayList<ClassifiedObject> resultArray = new ArrayList<ClassifiedObject>();
         for (ClassResult cr : ci.getImages().get(0).getClassifiers().get(0).getClasses()) {
             resultArray.add(new ClassifiedObject(cr.getClassName(), cr.getScore()));
-            //System.out.println(cr.getClassName() + "  " + cr.getScore());
         }
         resultArray.sort(new Sortbyvalue());
-
         return resultArray;
     }
-
+    //Get all the classes (names)
     public static ArrayList<String> getClassifiers() {
 
         ListClassifiersOptions listClassifiersOptions = new ListClassifiersOptions.Builder()
@@ -141,24 +140,25 @@ public class Methods {
 
         return result;
     }
-
+    //Get details about a class
     public static void getClassifierDetails(String classifier) {
-
+        
         GetClassifierOptions getClassifierOptions = new GetClassifierOptions.Builder(classifier).build();
         Classifier classifierDetails = service.getClassifier(getClassifierOptions).execute();
         System.out.println(classifierDetails);
     }
 
-    //THIS SHIT IS DOES NOT WORK
-    /*public static void updateClassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
+    
+    //Update a class
+    public static void updateClassifier(String positiveExamplesPathZip, String name) throws FileNotFoundException {
 
         UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
                 .classifierId("DefaultCustomModel_1716876290")
-                .addPositiveExamples("asd", new File(positiveExamplesPathZip))
+                .addClass(name, new File(positiveExamplesPathZip))
                 .build();
 
         Classifier updatedClassifier = service.updateClassifier(updateClassifierOptions).execute();
         System.out.println(updatedClassifier);
 
-    }*/
+    }
 }

@@ -54,24 +54,4 @@ public class Main {
 
     }
 
-
-
-    //THIS SHIT IS DOES NOT WORK
-    /*public static void updateCLassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
-        IamOptions options = new IamOptions.Builder()
-                .apiKey(apikey)
-                .build();
-
-        VisualRecognition service = new VisualRecognition("2018-03-19", options);
-
-        UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
-                .classifierId("DefaultCustomModel_1716876290")
-                .addPositiveExamples("asd", new File(positiveExamplesPathZip))
-                .build();
-
-        Classifier updatedClassifier = service.updateClassifier(updateClassifierOptions).execute();
-        System.out.println(updatedClassifier);
-
-    }*/
-
 }

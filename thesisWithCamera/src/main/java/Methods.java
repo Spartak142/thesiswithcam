@@ -1,3 +1,4 @@
+
 import com.github.sarxos.webcam.Webcam;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
@@ -27,8 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -38,20 +37,16 @@ import javax.imageio.ImageIO;
  *
  * @author Robin
  */
+public class Methods {
 
-
-public class Methods{
-    
-    
     public static IamOptions options = new IamOptions.Builder()
             .apiKey(apikey())
             .build();
 
     public static VisualRecognition service = new VisualRecognition("2018-03-19", options);
-    
-    
+
     //For safety reasons
-    public static String apikey (){
+    public static String apikey() {
         BufferedReader apikey = null;
         try {
             apikey = new BufferedReader(new FileReader("C:\\Users\\Robin\\Desktop\\Skolarbete\\Thesis\\key.txt"));
@@ -67,8 +62,6 @@ public class Methods{
     }
 
     public static ArrayList<ClassifiedObject> classifyImage(String path) throws FileNotFoundException {
-   
-        
         InputStream imagesStream = new FileInputStream(path);
         ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
                 .imagesFile(imagesStream)
@@ -78,22 +71,17 @@ public class Methods{
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
-
-       
         return JSONToArray(result);
     }
-    
+
     public static ArrayList<ClassifiedObject> classifyURL(String adress) throws FileNotFoundException, IOException {
-        
-        
+
         URL url = new URL(adress);
         Image image = ImageIO.read(url);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write((RenderedImage) image,"jpg", os); 
+        ImageIO.write((RenderedImage) image, "jpg", os);
         InputStream imagesStream = new ByteArrayInputStream(os.toByteArray());
-        
-        
-        
+
         ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
                 .imagesFile(imagesStream)
                 .imagesFilename("URL")
@@ -102,22 +90,20 @@ public class Methods{
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
-        
+
         return JSONToArray(result);
     }
-    
+
     public static ArrayList<ClassifiedObject> classifyCamera() throws FileNotFoundException, IOException {
-        
-        
+
         Webcam webcam = Webcam.getDefault();
         webcam.open();
-	Image image = webcam.getImage();
-	//ImageIO.write(image, "PNG", new File("test.png")); //THis has to be reaned later on when it is going to be trained
-        
+        Image image = webcam.getImage();
+
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write((RenderedImage) image,"jpg", os); 
+        ImageIO.write((RenderedImage) image, "jpg", os);
         InputStream imagesStream = new ByteArrayInputStream(os.toByteArray());
-        
+
         ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
                 .imagesFile(imagesStream)
                 .imagesFilename("URL")
@@ -126,28 +112,28 @@ public class Methods{
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
-        
+
         return JSONToArray(result);
     }
-    
-    public static ArrayList<ClassifiedObject> JSONToArray (ClassifiedImages ci){
+
+    public static ArrayList<ClassifiedObject> JSONToArray(ClassifiedImages ci) {
         ArrayList<ClassifiedObject> resultArray = new ArrayList<ClassifiedObject>();
-        for(ClassResult cr : ci.getImages().get(0).getClassifiers().get(0).getClasses()){
+        for (ClassResult cr : ci.getImages().get(0).getClassifiers().get(0).getClasses()) {
             resultArray.add(new ClassifiedObject(cr.getClassName(), cr.getScore()));
             //System.out.println(cr.getClassName() + "  " + cr.getScore());
         }
         resultArray.sort(new Sortbyvalue());
-        
+
         return resultArray;
     }
-    
-        public static ArrayList<String> getClassifiers() {
+
+    public static ArrayList<String> getClassifiers() {
 
         ListClassifiersOptions listClassifiersOptions = new ListClassifiersOptions.Builder()
                 .verbose(true)
                 .build();
         Classifiers classifiers = service.listClassifiers(listClassifiersOptions).execute();
-  
+
         ArrayList<String> result = new ArrayList<>();
         for (com.ibm.watson.developer_cloud.visual_recognition.v3.model.Class c : classifiers.getClassifiers().get(0).getClasses()) {
             result.add(c.getClassName());
@@ -162,7 +148,7 @@ public class Methods{
         Classifier classifierDetails = service.getClassifier(getClassifierOptions).execute();
         System.out.println(classifierDetails);
     }
-    
+
     //THIS SHIT IS DOES NOT WORK
     /*public static void updateClassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
 
@@ -175,5 +161,4 @@ public class Methods{
         System.out.println(updatedClassifier);
 
     }*/
-
 }

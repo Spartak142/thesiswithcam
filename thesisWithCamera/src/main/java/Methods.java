@@ -8,11 +8,13 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifiers;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
 import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -46,10 +48,6 @@ public class Methods{
             .build();
 
     public static VisualRecognition service = new VisualRecognition("2018-03-19", options);
-
-    public static void main(String[] args) throws FileNotFoundException {
-        
-    }
     
     
     //For safety reasons
@@ -165,5 +163,17 @@ public class Methods{
         System.out.println(classifierDetails);
     }
     
+    //THIS SHIT IS DOES NOT WORK
+    /*public static void updateClassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
+
+        UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
+                .classifierId("DefaultCustomModel_1716876290")
+                .addPositiveExamples("asd", new File(positiveExamplesPathZip))
+                .build();
+
+        Classifier updatedClassifier = service.updateClassifier(updateClassifierOptions).execute();
+        System.out.println(updatedClassifier);
+
+    }*/
 
 }

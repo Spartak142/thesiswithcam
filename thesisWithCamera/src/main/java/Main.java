@@ -81,6 +81,7 @@ public class Main {
         System.out.println(classifierDetails);
     }
 
+    //THIS SHIT IS DOES NOT WORK
     /*public static void updateCLassifier(String classifierID, String positiveExamplesPathZip, String name) throws FileNotFoundException {
         IamOptions options = new IamOptions.Builder()
                 .apiKey(apikey)

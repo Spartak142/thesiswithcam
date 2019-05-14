@@ -38,7 +38,8 @@ public class ClassifiedObject {
 
     @Override
     public String toString() {
-        return "ClassifiedObject{" + "name=" + name + ", value=" + value + '}';
+        return name + " " + value + "\n";
+        
     }
     
     

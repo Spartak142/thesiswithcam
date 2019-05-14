@@ -6,11 +6,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <dependencies> 
+        <!-- https://mvnrepository.com/artifact/com.ibm.watson.developer_cloud/visual-recognition -->
         <dependency>
             <groupId>com.ibm.watson.developer_cloud</groupId>
-            <artifactId>java-sdk</artifactId>
-            <version>6.9.0</version>
+            <artifactId>visual-recognition</artifactId>
+            <version>6.14.2</version>
         </dependency>
+
         <dependency>
             <groupId>com.github.sarxos</groupId>
             <artifactId>webcam-capture</artifactId>

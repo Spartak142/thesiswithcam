@@ -8,11 +8,13 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifier
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 /*
         To do list:
@@ -37,21 +39,23 @@ import java.util.ArrayList;
 public class Main {
 
     
+    //final static String apikey = "arK3RfX0XWFFUdA_ES6TZ8-Yb1bnC-sTeNxo4BEAm1Jy";
 
     
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
-        //SimpleUI ui=new SimpleUI();
-        //ui.setVisible(true);
-       
+        UI ui = new UI();
+
+       //File test = new File("../watson_images/tomato");
+        //System.out.println(test.getName());
         String path = "C:/Users/Robin/Desktop/Skolarbete/Thesis/Data/mango/images.jpg";
         
         //ArrayList<ClassifiedObject> test = Methods.classifyImage(path);
         //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
         //ArrayList<ClassifiedObject> cameratest = Methods.classifyCamera();
 
-        System.out.println(Methods.getClassifiers().toString());
+        //System.out.println(urltest.toString());
         
+        //System.out.println(Methods.getClassifiers());
 
     }
-
 }

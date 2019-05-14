@@ -1,16 +1,22 @@
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileSystemView;
@@ -20,25 +26,19 @@ import javax.swing.filechooser.FileSystemView;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author robindah
  */
-public class UI extends javax.swing.JFrame implements MouseListener{
+public class UI extends javax.swing.JFrame implements MouseListener {
 
     /**
      * Init figures
      */
-    public JLabel text;
     //This will be the amount of result from the classifier, should be a fixed number ideally since the amount of classes wont increase, currently 24 classes 
-    public ArrayList<JLabel> JLabels;
-    public GridBagLayout g;
-    
-        
-    
-    
-    public UI() throws IOException {
+    public ArrayList<JPanel> JPanels;
+
+    public UI() throws IOException, InterruptedException {
         //initComponents();
         //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
         ClassifiedImages test = Methods.classifyURLNoParse("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
@@ -46,51 +46,59 @@ public class UI extends javax.swing.JFrame implements MouseListener{
         //Gets the number of custom classes
         Long arraysize = test.getCustomClasses();
         ArrayList<String> classes = Methods.getClassifiers();
-        JLabels = new ArrayList<>();
+        JPanels = new ArrayList<>();
         for (int i = 0; i < arraysize; i++) {
-            
-            ImageIcon  f = new ImageIcon("../watson_images/" + classes.get(i) + ".jpg");
-            
-            JLabel e = new JLabel(f);
+
+            //ImageIcon  f = new ImageIcon("../watson_images/" + classes.get(i) + ".jpg");
+            JPanel e = new JPanel();
             e.add(new JLabel(urltest.get(i).getName()));
             e.addMouseListener(this);
+            /*
+            File input = new File("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + urltest.get(i).getName() + ".jpg");
+            BufferedImage image = ImageIO.read(input);
 
-            JLabels.add(e);
+            BufferedImage resized = resize(image, 200, 200);
+
+            
+ 
+            e.add(new JLabel(new ImageIcon(resized)));
+             */
+            e.add(new JLabel(new ImageIcon("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + urltest.get(i).getName() + ".jpg"))).setSize(new Dimension(200, 200));
+            JPanels.add(e);
         }
-        
-        g = new GridBagLayout();
+
+        GridBagLayout g = new GridBagLayout();
         setLayout(g);
         GridBagConstraints con = new GridBagConstraints();
-        
+
         //
-         
         int x_axis = 0;
         int y_axis = 0;
-       
-        for (int i = 0; i < JLabels.size(); i++) {
+
+        for (int i = 0; i < JPanels.size(); i++) {
             con = new GridBagConstraints();
             con.gridy = y_axis;
             con.gridx = x_axis;
             con.gridwidth = 1;
             con.fill = GridBagConstraints.HORIZONTAL;
-            
-            g.setConstraints(JLabels.get(i), con);
-            add(JLabels.get(i));
-            JLabels.get(i).setPreferredSize(new Dimension(200, 200));
-            JLabels.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-            
+
+            g.setConstraints(JPanels.get(i), con);
+            add(JPanels.get(i));
+            JPanels.get(i).setPreferredSize(new Dimension(200, 200));
+            JPanels.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+
             if (x_axis == 5) {
                 x_axis = 0;
                 y_axis++;
-            }else{
+            } else {
                 x_axis++;
             }
         }
-        
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
-        
+
     }
 
     /**
@@ -152,38 +160,37 @@ public class UI extends javax.swing.JFrame implements MouseListener{
                     new UI().setVisible(true);
                 } catch (IOException ex) {
                     Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        
-        
-        
+
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        
-        }
+
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        
+        e.getComponent().setBackground(Color.red);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        }
+    }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         //System.out.println(e.getLocationOnScreen());
-        }
+    }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        }
-    
-    
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

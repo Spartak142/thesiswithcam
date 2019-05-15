@@ -4,10 +4,12 @@ import static com.sun.javafx.iio.ImageStorage.ImageType.RGB;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -39,9 +41,37 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
      */
     //This will be the amount of result from the classifier, should be a fixed number ideally since the amount of classes wont increase, currently 24 classes 
     public ArrayList<Square> Squares;
+    public Dimension screenSize;
 
     public UI() throws IOException, InterruptedException {
         //Added everything in run();
+    }
+    
+    @Override
+    public void run() {
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        //Here it waits for the image to be taken
+        //Closes on exit
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //Fullscreen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //Removes the bars so looks like fullscreen
+        setUndecorated(true);
+        //To like warp up all components.
+        pack();
+        //Make it visible
+        setVisible(true);
+        
+        
+        phase1();
+        this.repaint();
+        //Here it shows the alternatives
+        
+        phase2();
+        this.repaint(5000);
+        //Here it does... something
+        
+        //phase3();
     }
 
     /**
@@ -97,8 +127,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //</editor-fold>
 
         /* Create and display the form */
-
-
     }
 
     @Override
@@ -113,6 +141,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         Object o = e.getSource();
         //Squares.indexOf(o) gives us the object with all values.
         System.out.println(Squares.get(Squares.indexOf(o)).co.name);
+        
     }
 
     @Override
@@ -128,8 +157,28 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public void mouseExited(MouseEvent e) {
     }
 
-    @Override
-    public void run() {
+
+    //Get an image on some sort
+    public void phase1() {
+        GridBagLayout g = new GridBagLayout();
+        setLayout(g);
+        GridBagConstraints con = new GridBagConstraints();
+        con = new GridBagConstraints();
+            con.gridy = 0;
+            con.gridx = 0;
+            con.gridwidth = 1;
+            con.fill = GridBagConstraints.HORIZONTAL;
+            JLabel test = new JLabel("HELLO");
+            Font f = new Font("serif", Font.PLAIN, 60);
+            test.setFont(f);
+            g.setConstraints(test, con);
+            //Adds it to the main frame
+            add(test);
+
+
+    }
+    //The phase after taking the picture
+    public void phase2() {
         ClassifiedImages test = null;
         try {
             test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
@@ -143,9 +192,9 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         for (int i = 0; i < arraysize; i++) {
             //Configuring all the squares
             //Creates a new square
-            Square sq = new Square(0,0,urltest.get(i));
+            Square sq = new Square(0, 0, urltest.get(i));
             //Adds the name of the class to the square
-            sq.add(new JLabel(urltest.get(i).getName()));
+            //sq.add(new JLabel(urltest.get(i).getName()));
             //Adds a mouselistener for later use like clicking on it.
             sq.addMouseListener(this);
             //This line does not work at school but works at home
@@ -153,14 +202,14 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //This can be done so that each square or something has its own path to the image
             Image image = null;
             try {
-                image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance(160, 160, Image.SCALE_SMOOTH);
+                image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth()/9, (int) screenSize.getWidth()/9, Image.SCALE_SMOOTH);
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            sq.add(new JLabel(new ImageIcon(image))).setSize(new Dimension(200, 200));
+            sq.add(new JLabel(new ImageIcon(image), SwingConstants.CENTER));
             Squares.add(sq);
         }
-
+        
         GridBagLayout g = new GridBagLayout();
         setLayout(g);
         GridBagConstraints con = new GridBagConstraints();
@@ -175,10 +224,10 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             con.gridx = x_axis;
             con.gridwidth = 1;
             con.fill = GridBagConstraints.HORIZONTAL;
-
+            
             g.setConstraints(Squares.get(i), con);
             add(Squares.get(i));
-            Squares.get(i).setPreferredSize(new Dimension(200, 200));
+            Squares.get(i).setPreferredSize(new Dimension((int) screenSize.getWidth()/8, (int) screenSize.getWidth()/8));
             Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
             if (x_axis == 5) {
@@ -188,11 +237,13 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 x_axis++;
             }
         }
+        
+        
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        pack();
-        setVisible(true);
+    }
 
+    public void phase3() {
+        System.out.println("phase 3");
     }
 
 

@@ -36,7 +36,7 @@ public class UI extends javax.swing.JFrame implements MouseListener {
      * Init figures
      */
     //This will be the amount of result from the classifier, should be a fixed number ideally since the amount of classes wont increase, currently 24 classes 
-    public ArrayList<JPanel> JPanels;
+    public ArrayList<Square> Squares;
 
     public UI() throws IOException, InterruptedException {
         //initComponents();
@@ -46,25 +46,17 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         //Gets the number of custom classes
         Long arraysize = test.getCustomClasses();
         ArrayList<String> classes = Methods.getClassifiers();
-        JPanels = new ArrayList<>();
+        Squares = new ArrayList<>();
         for (int i = 0; i < arraysize; i++) {
 
             //ImageIcon  f = new ImageIcon("../watson_images/" + classes.get(i) + ".jpg");
-            JPanel e = new JPanel();
-            e.add(new JLabel(urltest.get(i).getName()));
-            e.addMouseListener(this);
-            /*
-            File input = new File("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + urltest.get(i).getName() + ".jpg");
-            BufferedImage image = ImageIO.read(input);
-
-            BufferedImage resized = resize(image, 200, 200);
-
             
- 
-            e.add(new JLabel(new ImageIcon(resized)));
-             */
-            e.add(new JLabel(new ImageIcon("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + urltest.get(i).getName() + ".jpg"))).setSize(new Dimension(200, 200));
-            JPanels.add(e);
+            Square sq = new Square(0,0,urltest.get(i));
+            sq.add(new JLabel(urltest.get(i).getName()));
+            sq.addMouseListener(this);
+            //This line does not work at school but works at home
+            sq.add(new JLabel(new ImageIcon("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images" + urltest.get(i).getName() + ".jpg")))/*.setSize(new Dimension(200, 200))*/;
+            Squares.add(sq);
         }
 
         GridBagLayout g = new GridBagLayout();
@@ -75,17 +67,17 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         int x_axis = 0;
         int y_axis = 0;
 
-        for (int i = 0; i < JPanels.size(); i++) {
+        for (int i = 0; i < Squares.size(); i++) {
             con = new GridBagConstraints();
             con.gridy = y_axis;
             con.gridx = x_axis;
             con.gridwidth = 1;
             con.fill = GridBagConstraints.HORIZONTAL;
 
-            g.setConstraints(JPanels.get(i), con);
-            add(JPanels.get(i));
-            JPanels.get(i).setPreferredSize(new Dimension(200, 200));
-            JPanels.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            g.setConstraints(Squares.get(i), con);
+            add(Squares.get(i));
+            Squares.get(i).setPreferredSize(new Dimension(200, 200));
+            Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
             if (x_axis == 5) {
                 x_axis = 0;
@@ -176,6 +168,8 @@ public class UI extends javax.swing.JFrame implements MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         e.getComponent().setBackground(Color.red);
+        Object o = e.getSource();
+        System.out.println(Squares.get(Squares.indexOf(o)).co.name);
     }
 
     @Override

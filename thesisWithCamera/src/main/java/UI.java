@@ -1,5 +1,6 @@
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
+import static com.sun.javafx.iio.ImageStorage.ImageType.RGB;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -45,6 +47,7 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
         //Gets the number of custom classes
         Long arraysize = test.getCustomClasses();
+        //This can be saved locally to save time
         ArrayList<String> classes = Methods.getClassifiers();
         Squares = new ArrayList<>();
         for (int i = 0; i < arraysize; i++) {
@@ -55,7 +58,10 @@ public class UI extends javax.swing.JFrame implements MouseListener {
             sq.add(new JLabel(urltest.get(i).getName()));
             sq.addMouseListener(this);
             //This line does not work at school but works at home
-            sq.add(new JLabel(new ImageIcon("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images" + urltest.get(i).getName() + ".jpg")))/*.setSize(new Dimension(200, 200))*/;
+            //sq.add(new JLabel(new ImageIcon("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images" + urltest.get(i).getName() + ".jpg")))/*.setSize(new Dimension(200, 200))*/;
+            sq.setBackground(new Color(255, 255, 255));
+            Image image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance(160, 160, Image.SCALE_SMOOTH);
+            sq.add(new JLabel(new ImageIcon(image))).setSize(new Dimension(200, 200));
             Squares.add(sq);
         }
 
@@ -159,6 +165,16 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         });
 
     }
+    
+    
+    /*We need different phases of the UI. 
+    Startup phase
+    Scan phase
+    Choose option phase
+    
+    
+    */
+    
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -168,7 +184,9 @@ public class UI extends javax.swing.JFrame implements MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         e.getComponent().setBackground(Color.red);
+        //This is the magic
         Object o = e.getSource();
+        //Squares.indexOf(o) gives us the object with all values.
         System.out.println(Squares.get(Squares.indexOf(o)).co.name);
     }
 

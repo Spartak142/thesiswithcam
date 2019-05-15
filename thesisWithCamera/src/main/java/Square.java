@@ -18,6 +18,7 @@ public class Square extends JPanel implements MouseListener{
     int x_axis;
     int y_axis;
     ClassifiedObject co;
+    
 
     public Square(int x_axis, int y_axis, ClassifiedObject co) {
         this.x_axis = x_axis;

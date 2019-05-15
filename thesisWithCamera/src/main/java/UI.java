@@ -32,7 +32,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author robindah
  */
-public class UI extends javax.swing.JFrame implements MouseListener {
+public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     /**
      * Init figures
@@ -41,61 +41,7 @@ public class UI extends javax.swing.JFrame implements MouseListener {
     public ArrayList<Square> Squares;
 
     public UI() throws IOException, InterruptedException {
-        ClassifiedImages test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
-        ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
-        //Gets the number of custom classes
-        Long arraysize = test.getCustomClasses();
-        //This can be saved locally to save time
-        ArrayList<String> classes = Methods.getClassifiers();
-        Squares = new ArrayList<>();
-        for (int i = 0; i < arraysize; i++) {
-            //Configuring all the squares
-            //Creates a new square
-            Square sq = new Square(0,0,urltest.get(i));
-            //Adds the name of the class to the square
-            sq.add(new JLabel(urltest.get(i).getName()));
-            //Adds a mouselistener for later use like clicking on it.
-            sq.addMouseListener(this);
-            //This line does not work at school but works at home
-            sq.setBackground(new Color(255, 255, 255));
-            //This can be done so that each square or something has its own path to the image
-            Image image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance(160, 160, Image.SCALE_SMOOTH);
-            sq.add(new JLabel(new ImageIcon(image))).setSize(new Dimension(200, 200));
-            Squares.add(sq);
-        }
-
-        GridBagLayout g = new GridBagLayout();
-        setLayout(g);
-        GridBagConstraints con = new GridBagConstraints();
-
-        //
-        int x_axis = 0;
-        int y_axis = 0;
-
-        for (int i = 0; i < Squares.size(); i++) {
-            con = new GridBagConstraints();
-            con.gridy = y_axis;
-            con.gridx = x_axis;
-            con.gridwidth = 1;
-            con.fill = GridBagConstraints.HORIZONTAL;
-
-            g.setConstraints(Squares.get(i), con);
-            add(Squares.get(i));
-            Squares.get(i).setPreferredSize(new Dimension(200, 200));
-            Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
-            if (x_axis == 5) {
-                x_axis = 0;
-                y_axis++;
-            } else {
-                x_axis++;
-            }
-        }
-
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        pack();
-        setVisible(true);
-
+        //Added everything in run();
     }
 
     /**
@@ -151,29 +97,9 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new UI().setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+
 
     }
-    
-    
-    /*We need different phases of the UI. 
-    Startup phase
-    Scan phase
-    Choose option phase
-    
-    
-    */
-    
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -200,6 +126,73 @@ public class UI extends javax.swing.JFrame implements MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void run() {
+        ClassifiedImages test = null;
+        try {
+            test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
+        } catch (IOException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
+        //Gets the number of custom classes
+        Long arraysize = test.getCustomClasses();
+        Squares = new ArrayList<>();
+        for (int i = 0; i < arraysize; i++) {
+            //Configuring all the squares
+            //Creates a new square
+            Square sq = new Square(0,0,urltest.get(i));
+            //Adds the name of the class to the square
+            sq.add(new JLabel(urltest.get(i).getName()));
+            //Adds a mouselistener for later use like clicking on it.
+            sq.addMouseListener(this);
+            //This line does not work at school but works at home
+            sq.setBackground(new Color(255, 255, 255));
+            //This can be done so that each square or something has its own path to the image
+            Image image = null;
+            try {
+                image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance(160, 160, Image.SCALE_SMOOTH);
+            } catch (IOException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            sq.add(new JLabel(new ImageIcon(image))).setSize(new Dimension(200, 200));
+            Squares.add(sq);
+        }
+
+        GridBagLayout g = new GridBagLayout();
+        setLayout(g);
+        GridBagConstraints con = new GridBagConstraints();
+
+        //
+        int x_axis = 0;
+        int y_axis = 0;
+
+        for (int i = 0; i < Squares.size(); i++) {
+            con = new GridBagConstraints();
+            con.gridy = y_axis;
+            con.gridx = x_axis;
+            con.gridwidth = 1;
+            con.fill = GridBagConstraints.HORIZONTAL;
+
+            g.setConstraints(Squares.get(i), con);
+            add(Squares.get(i));
+            Squares.get(i).setPreferredSize(new Dimension(200, 200));
+            Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+
+            if (x_axis == 5) {
+                x_axis = 0;
+                y_axis++;
+            } else {
+                x_axis++;
+            }
+        }
+
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        pack();
+        setVisible(true);
+
     }
 
 

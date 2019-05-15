@@ -41,9 +41,7 @@ public class UI extends javax.swing.JFrame implements MouseListener {
     public ArrayList<Square> Squares;
 
     public UI() throws IOException, InterruptedException {
-        //initComponents();
-        //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
-        ClassifiedImages test = Methods.classifyURLNoParse("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
+        ClassifiedImages test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
         ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
         //Gets the number of custom classes
         Long arraysize = test.getCustomClasses();
@@ -51,15 +49,16 @@ public class UI extends javax.swing.JFrame implements MouseListener {
         ArrayList<String> classes = Methods.getClassifiers();
         Squares = new ArrayList<>();
         for (int i = 0; i < arraysize; i++) {
-
-            //ImageIcon  f = new ImageIcon("../watson_images/" + classes.get(i) + ".jpg");
-            
+            //Configuring all the squares
+            //Creates a new square
             Square sq = new Square(0,0,urltest.get(i));
+            //Adds the name of the class to the square
             sq.add(new JLabel(urltest.get(i).getName()));
+            //Adds a mouselistener for later use like clicking on it.
             sq.addMouseListener(this);
             //This line does not work at school but works at home
-            //sq.add(new JLabel(new ImageIcon("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images" + urltest.get(i).getName() + ".jpg")))/*.setSize(new Dimension(200, 200))*/;
             sq.setBackground(new Color(255, 255, 255));
+            //This can be done so that each square or something has its own path to the image
             Image image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance(160, 160, Image.SCALE_SMOOTH);
             sq.add(new JLabel(new ImageIcon(image))).setSize(new Dimension(200, 200));
             Squares.add(sq);

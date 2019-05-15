@@ -136,7 +136,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        e.getComponent().setBackground(Color.red);
+        //TEMPORARLY just to see that it works
+        e.getComponent().setBackground(Color.green);
         //This is the magic
         Object o = e.getSource();
         //Squares.indexOf(o) gives us the object with all values.

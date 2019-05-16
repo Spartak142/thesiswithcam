@@ -10,6 +10,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamMotionDetector;
 import com.github.sarxos.webcam.WebcamMotionEvent;
 import com.github.sarxos.webcam.WebcamMotionListener;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
@@ -81,9 +82,14 @@ public class Main implements WebcamMotionListener {
     }
 
     public static void main(String[] args) throws IOException {
+        Dimension[] nonStandardResolutions = new Dimension[]{
+            WebcamResolution.HD720.getSize(),
+            new Dimension(2000, 1000),
+            new Dimension(1000, 500),};
         //Webcam initialisation
         webcam = Webcam.getDefault();
-        webcam.setViewSize(new Dimension(640, 480));
+        webcam.setCustomViewSizes(nonStandardResolutions);
+        webcam.setViewSize(WebcamResolution.HD720.getSize());
         webcam.open();
 
         //For naming the pictures
@@ -93,6 +99,6 @@ public class Main implements WebcamMotionListener {
 
         // Start and keep the program open
         new Main();
-        System.in.read(); 
+        System.in.read();
     }
 }

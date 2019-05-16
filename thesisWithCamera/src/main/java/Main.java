@@ -34,6 +34,7 @@ public class Main implements WebcamMotionListener {
     public static String classifierId = "DefaultCustomModel_1716876290";
     private static Webcam webcam;
     private final String testPic = "testpic";
+    private FolderZipper zippah= new FolderZipper();
 
     // Constructor for this class that start motion detector
     public Main() {
@@ -75,8 +76,13 @@ public class Main implements WebcamMotionListener {
             // Geting the results
             ClassifiedImages result = service.classify(classifyOptions).execute();
             System.out.println(result);
+            if (i==10){
+               zippah.zipFolder("testpics","zipped");
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.out.println("Something is wrong with zipping");
         }
 
     }

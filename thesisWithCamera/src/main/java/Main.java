@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import static java.lang.Thread.sleep;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -29,20 +31,11 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Main implements WebcamMotionListener {
-
-    public static VisualRecognition service;
-    private static int i;
-    public static String classifierId = "DefaultCustomModel_1716876290";
-    private final String testPic = "testpic";
-    private FolderZipper zippah= new FolderZipper();
+    public static ScheduledThreadPoolExecutor eventPool;
+    public static boolean waitFor2;
 
     // Constructor for this class that start motion detector
     public Main() throws IOException, InterruptedException {
-        
-        
-        
-        
-        //UI ui = new UI();
 
         //ArrayList<ClassifiedObject> test = Methods.classifyImage(path);
         //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
@@ -56,23 +49,34 @@ public class Main implements WebcamMotionListener {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ScheduledThreadPoolExecutor eventPool = new ScheduledThreadPoolExecutor(3);
+        //Creates folders
+        /*ArrayList<String> classes = Methods.getClassifiers();
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println(classes.get(i));
+            new File("classes/" + classes.get(i)).mkdir();
+            
+        }*/
+        File dir = new File("classes");
+        for(File f : dir.listFiles()){
+            System.out.println("Foldername: " + f.getName() + ", Files: " + f.listFiles().length);
+        }
+
+        
+        eventPool = new ScheduledThreadPoolExecutor(3);
 
         //Adds the UI as a runnable
         //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
         //Adds the camera as a runnaable
-        //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
+        eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
+
+
         
     }
 
-    public void run() {
-        
-        //Dont konw waht to put here
-        }
+    public void run() {/*empty*/}
 
     @Override
-    public void motionDetected(WebcamMotionEvent wme) {
-        System.out.println("Hej motion");}
+    public void motionDetected(WebcamMotionEvent wme) {/*empty*/}
 
 }
 

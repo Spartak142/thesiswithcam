@@ -15,7 +15,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.Thread.sleep;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -31,23 +36,26 @@ import javax.imageio.ImageIO;
  */
 public class Camera implements WebcamMotionListener, Runnable {
 
-    private static Webcam webcam;
-    private static int i;
+    public static Webcam webcam;
+    public static int i;
     public static String classifierId = "DefaultCustomModel_1716876290";
-    private final String testPic = "testpic";
-    private FolderZipper zippah = new FolderZipper();
+    public final String testPic = "testpic";
+    public File sessionImages;
+    public FolderZipper zippah = new FolderZipper();
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+    public static volatile ArrayList<ClassifiedObject> arrayOfResults;
+    public static volatile boolean temp;
 
     @Override
     public void motionDetected(WebcamMotionEvent wme) {
-        System.out.println("Lego");
-
         //taking a pic and putting it into the folder for pics.
+        System.out.println(sessionImages.listFiles().length);
         BufferedImage image = webcam.getImage();
-        String imgName = "./testpics/" + testPic + i + ".png";
-        System.out.println(imgName);
-        i++;
+        String imageName = "./sessionImages/" + "sessionImage_" + dateFormat.format(new Date()) + ".png";
+        System.out.println(imageName);
+        //i++;
         try {
-            ImageIO.write(image, "PNG", new File(imgName));
+            ImageIO.write(image, "PNG", new File(imageName));
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,52 +63,83 @@ public class Camera implements WebcamMotionListener, Runnable {
         // Sending the taken pic for processing
         InputStream imagesStream;
         try {
-            imagesStream = new FileInputStream(imgName);
+            imagesStream = new FileInputStream(imageName);
             ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
                     .imagesFile(imagesStream)
-                    .imagesFilename("download.jpg")
-                    .threshold((float) 0.6)
+                    .imagesFilename(imageName)
+                    .threshold((float) 0)
                     .classifierIds(Arrays.asList(classifierId))
                     .build();
             // Geting the results
             ClassifiedImages result = Methods.service.classify(classifyOptions).execute();
-            System.out.println(result);
-            if (i == 10) {
-                zippah.zipFolder("testpics", "zipped");
-            }
+            arrayOfResults.add(Methods.JSONToArray(result).get(0));
+
+            //THIs has to be done for each class
+            //if (sessionImages.listFiles().length > 10) {
+            //zippah.zipFolder("sessionImages", "zipped");
+            //}
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
+        } catch (NullPointerException ex) {
             System.out.println("Something is wrong with zipping");
         }
+        catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+        if(arrayOfResults.size() > 1){
+            acceptedClassification();
+        }
+        //System.out.println(arrayOfResults.toString());
 
+    }
+
+    //This checks if the past 2 values are the same
+    public static void acceptedClassification() {
+        double a = arrayOfResults.get(arrayOfResults.size()-1).getValue();
+        double b = arrayOfResults.get(arrayOfResults.size()-2).getValue();
+        double diff = Math.abs(a-b);
+        System.out.println("abs: " + diff + "a: " + arrayOfResults.get(arrayOfResults.size()-1).toString()  + ",b: " + arrayOfResults.get(arrayOfResults.size()-2).toString());
+        if(diff < 0.1 && (arrayOfResults.get(arrayOfResults.size()-1).getName().equals(arrayOfResults.get(arrayOfResults.size()-2).getName()))){
+           System.out.println("temp is true now");
+            temp = true;
+        }else{
+            temp = false;
+        }
     }
 
     @Override
     public void run() {
-        System.out.println("Camera!");
-        WebcamMotionDetector detector = new WebcamMotionDetector(webcam);
-        detector.setInterval(1500); // one check per 1500 ms
-        detector.addMotionListener(this);
-        detector.start();
+        arrayOfResults = new ArrayList<ClassifiedObject>();
 
         Dimension[] nonStandardResolutions = new Dimension[]{
             WebcamResolution.HD720.getSize(),
             new Dimension(2000, 1000),
             new Dimension(1000, 500),};
         //Webcam initialisation
-        webcam = Webcam.getWebcams().get(0);
+        webcam = Webcam.getWebcams().get(1);
         webcam.setCustomViewSizes(nonStandardResolutions);
         webcam.setViewSize(WebcamResolution.HD720.getSize());
         webcam.open();
-        
-                //For naming the pictures
-        i = 0;
-        File thePics = new File("testpics");
-        thePics.mkdir();
+
+        //For naming the pictures
+        sessionImages = new File("sessionImages");
+        sessionImages.mkdir();
 
         // Start and keep the program open
-       
+        WebcamMotionDetector detector = new WebcamMotionDetector(webcam);
+        detector.setInterval(200); // one check per 1500 ms
+        detector.addMotionListener(this);
+        detector.start();
+
+        //while(arrayOfResults.size() < 2) {
+            temp = false;
+            while(!temp){
+                
+            }
+        //}
+        System.out.println("JAAAAAAAA");
+        detector.stop();
+        webcam.close();
 
     }
 

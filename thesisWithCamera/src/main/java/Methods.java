@@ -1,4 +1,5 @@
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamMotionEvent;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
@@ -10,6 +11,7 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierO
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -206,6 +208,40 @@ public class Methods{
         System.out.println(updatedClassifier);
 
     }
+        
+    /*public void motionDetected(WebcamMotionEvent wme) {
+        BufferedImage image = webcam.getImage();
+        String imgName = "./testpics/" + testPic + i + ".png";
+        System.out.println(imgName);
+        i++;
+        try {
+            ImageIO.write(image, "PNG", new File(imgName));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Sending the taken pic for processing
+        InputStream imagesStream;
+        try {
+            imagesStream = new FileInputStream(imgName);
+            ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
+                    .imagesFile(imagesStream)
+                    .imagesFilename("download.jpg")
+                    .threshold((float) 0.6)
+                    .classifierIds(Arrays.asList(classifierId))
+                    .build();
+            // Geting the results
+            ClassifiedImages result = service.classify(classifyOptions).execute();
+            System.out.println(result);
+            if (i==10){
+               zippah.zipFolder("testpics","zipped");
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.out.println("Something is wrong with zipping");
+        }
+    }*/
     
 
 }

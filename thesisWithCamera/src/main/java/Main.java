@@ -54,7 +54,7 @@ public class Main implements WebcamMotionListener {
 
         //taking a pic and putting it into the folder for pics.
         BufferedImage image = webcam.getImage();
-        String imgName = "./testpics/" + testPic + i + ".png";
+        String imgName = "./testpics/" + testPic + i + ".jpg";
         System.out.println(imgName);
         i++;
         try {

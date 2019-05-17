@@ -58,18 +58,6 @@ public class Methods{
     
     //For safety reasons
     public static String apikey (){
-        /*BufferedReader apikey = null;
-        try {
-            apikey = new BufferedReader(new FileReader("‪H:\\apikey.txt"));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Methods.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            return apikey.readLine();
-        } catch (IOException ex) {
-            Logger.getLogger(Methods.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "null";*/
         return "sP83C9a-mEePlb5-4banZN1EYLSbxavGnpYmOLYGl-v7";
     }
 

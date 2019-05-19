@@ -34,27 +34,31 @@ public class Main implements WebcamMotionListener {
     public static String classifierId = "DefaultCustomModel_1716876290";
     private static Webcam webcam;
     private final String testPic = "testpic";
-    private FolderZipper zippah= new FolderZipper();
+    private FolderZipper zippah = new FolderZipper();
+    private static String folderName;
+    private WebcamMotionDetector detector;
+    private static Scanner in;
 
     // Constructor for this class that start motion detector
     public Main() {
-        WebcamMotionDetector detector = new WebcamMotionDetector(webcam);
-        detector.setInterval(1500); // one check per 1500 ms
+        detector = new WebcamMotionDetector(webcam);
+        detector.setInterval(1000); // one check per 1500 ms
         detector.addMotionListener(this);
         detector.start();
+
     }
 
     @Override
     public void motionDetected(WebcamMotionEvent wme) {
         //Initilising API
-        IamOptions options = new IamOptions.Builder()
+        /*    IamOptions options = new IamOptions.Builder()
                 .apiKey("sP83C9a-mEePlb5-4banZN1EYLSbxavGnpYmOLYGl-v7")
                 .build();
-        service = new VisualRecognition("2018-03-19", options);
+        service = new VisualRecognition("2018-03-19", options); */
 
         //taking a pic and putting it into the folder for pics.
         BufferedImage image = webcam.getImage();
-        String imgName = "./testpics/" + testPic + i + ".jpg";
+        String imgName = "./testpics/" + folderName + "/" + testPic + i + ".jpg";
         System.out.println(imgName);
         i++;
         try {
@@ -62,29 +66,26 @@ public class Main implements WebcamMotionListener {
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        // Sending the taken pic for processing
-        InputStream imagesStream;
-        try {
-            imagesStream = new FileInputStream(imgName);
-            ClassifyOptions classifyOptions = new ClassifyOptions.Builder()
-                    .imagesFile(imagesStream)
-                    .imagesFilename("download.jpg")
-                    .threshold((float) 0.6)
-                    .classifierIds(Arrays.asList(classifierId))
-                    .build();
-            // Geting the results
-            ClassifiedImages result = service.classify(classifyOptions).execute();
-            System.out.println(result);
-            if (i==10){
-               zippah.zipFolder("testpics","zipped");
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            System.out.println("Something is wrong with zipping");
+        if (i == 3) {
+            pictureRound();
         }
 
+        // Sending the taken pic for processing
+        /**
+         * InputStream imagesStream; try { imagesStream = new
+         * FileInputStream(imgName); ClassifyOptions classifyOptions = new
+         * ClassifyOptions.Builder() .imagesFile(imagesStream)
+         * .imagesFilename("download.jpg") .threshold((float) 0.6)
+         * .classifierIds(Arrays.asList(classifierId)) .build(); // Geting the
+         * results ClassifiedImages result =
+         * service.classify(classifyOptions).execute();
+         * System.out.println(result); if (i==10){
+         * zippah.zipFolder("testpics","zipped"); } } catch
+         * (FileNotFoundException ex) {
+         * Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex); }
+         * catch (Exception ex) { System.out.println("Something is wrong with
+         * zipping"); }
+         */
     }
 
     public static void main(String[] args) throws IOException {
@@ -98,13 +99,26 @@ public class Main implements WebcamMotionListener {
         webcam.setViewSize(WebcamResolution.HD720.getSize());
         webcam.open();
 
+        in = new Scanner(System.in);
+         new Main();
+        pictureRound();
+        while (true) {
+
+        }
+        // Start and keep the program open
+
+    }
+
+    private static void pictureRound() {
+        System.out.println("Enter the folder name: ");
+        folderName = in.next();
         //For naming the pictures
         i = 0;
         File thePics = new File("testpics");
         thePics.mkdir();
+        File thePicClass = new File("testpics/" + folderName);
+        thePicClass.mkdir();
+       
 
-        // Start and keep the program open
-        new Main();
-        System.in.read();
     }
 }

@@ -100,8 +100,9 @@ public class Main implements WebcamMotionListener {
         webcam.open();
 
         in = new Scanner(System.in);
-         new Main();
+        
         pictureRound();
+         new Main();
         while (true) {
 
         }

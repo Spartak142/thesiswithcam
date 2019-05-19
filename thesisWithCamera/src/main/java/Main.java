@@ -56,18 +56,18 @@ public class Main implements WebcamMotionListener {
             new File("classes/" + classes.get(i)).mkdir();
             
         }*/
-        File dir = new File("classes");
+        /*File dir = new File("classes");
         for(File f : dir.listFiles()){
             System.out.println("Foldername: " + f.getName() + ", Files: " + f.listFiles().length);
-        }
+        }*/
 
         
         eventPool = new ScheduledThreadPoolExecutor(3);
 
         //Adds the UI as a runnable
-        //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
+        eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
         //Adds the camera as a runnaable
-        eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
+        //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
 
 
         

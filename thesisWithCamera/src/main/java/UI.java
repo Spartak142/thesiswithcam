@@ -3,6 +3,7 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImag
 import static com.sun.javafx.iio.ImageStorage.ImageType.RGB;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -12,6 +13,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +50,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public ArrayList<Square> Squares;
     public Dimension screenSize;
     boolean classifyMode;
+    ArrayList<Component> VisableComponents;
 
     public UI() throws IOException, InterruptedException {
         //Added everything in run();
@@ -54,6 +58,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void run() {
+        
+        VisableComponents = new ArrayList<Component>();
 
         //Gets screen size
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -68,20 +74,17 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         pack();
         //Make it visible
         setVisible(true);
-
-        //Camera phase
-        /*
-        Activate camera
-        Take pictures at a good interval
-        When two in following images show good results of same kind go to next phase
         
-         */
-        //This means that the program is running
-        classifyMode = true;
-        //while (classifyMode) {
-        phase1();
+        try {
+            phase1();
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        repaint();
+        removeComponents();
+        
+        this.repaint();
         //Here it shows the alternatives
         phase2();
         this.repaint();
@@ -131,15 +134,11 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        /* Create and display the form */
         //</editor-fold>
 
         /* Create and display the form */
@@ -174,8 +173,16 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public void mouseExited(MouseEvent e) {
     }
 
+    public void removeComponents(){
+        for(Component c : VisableComponents){
+            this.remove(c);
+            
+        }
+        VisableComponents.clear();
+    }
+    
     //Get an image on some sort
-    public void phase1() {
+    public void phase1() throws InterruptedException {
         GridBagLayout g = new GridBagLayout();
         setLayout(g);
         GridBagConstraints con = new GridBagConstraints();
@@ -189,29 +196,49 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         test.setFont(f);
         g.setConstraints(test, con);
         //Adds it to the main frame
-        add(test);
-        setVisible(true);
 
+        add(test);
+        VisableComponents.add(test);
+        
+        Icon icon = new ImageIcon("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\loader.gif");
+        JLabel gif = new JLabel(icon);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        con.gridy = 1;
+        g.setConstraints(gif, con);
+        add(gif);
+        VisableComponents.add(gif);
+  
+        setVisible(true);
+        
+
+
+
+        //Here it should wait for the classification test to pass
+        //Camera.acceptedClassification();
     }
 
     //The phase after taking the picture
     public void phase2() {
         ClassifiedImages test = null;
         try {
+            //This right here should be the results from camera.
+            //Like this line Image imageOfGuess = ImageIO.read(new File("src/main/java/watson_images/" + watsonGuess + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 5, (int) screenSize.getWidth() / 5, Image.SCALE_SMOOTH);
             test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
         } catch (IOException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
         }
         ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
         //Gets the number of custom classes
-        Long arraysize = test.getCustomClasses();
         Squares = new ArrayList<>();
-        for (int i = 0; i < arraysize; i++) {
+        for (int i = 0; i < 18; i++) {
             //Configuring all the squares
             //Creates a new square
             Square sq = new Square(0, 0, urltest.get(i));
-            //Adds the name of the class to the square
-            //sq.add(new JLabel(urltest.get(i).getName()));
             //Adds a mouselistener for later use like clicking on it.
             sq.addMouseListener(this);
             //This line does not work at school but works at home
@@ -219,7 +246,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //This can be done so that each square or something has its own path to the image
             Image image = null;
             try {
-                image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
+                image = ImageIO.read(new File("C:\\Users\\Robin\\Documents\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + urltest.get(i).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -235,7 +262,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         int x_axis = 0;
         int y_axis = 0;
 
-        for (int i = 0; i < Squares.size(); i++) {
+        for (int i = 0; i < 18; i++) {
             con = new GridBagConstraints();
             con.gridy = y_axis;
             con.gridx = x_axis;

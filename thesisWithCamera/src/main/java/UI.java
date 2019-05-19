@@ -1,60 +1,39 @@
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
-import static com.sun.javafx.iio.ImageStorage.ImageType.RGB;
-import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import static java.lang.Thread.sleep;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.filechooser.FileSystemView;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author robindah
- */
-public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
+public class UI extends javax.swing.JFrame implements MouseListener {
 
     /**
      * Init figures
      */
     //This will be the amount of result from the classifier, should be a fixed number ideally since the amount of classes wont increase, currently 24 classes 
-    public ArrayList<Square> Squares;
+    public ArrayList<Square> squares;
     public Dimension screenSize;
     boolean classifyMode;
+    public JLabel test;
+    private  JLabel noB,yesB, guessingPic;
 
-    public UI() throws IOException, InterruptedException {
-        //Added everything in run();
-    }
-
-    @Override
-    public void run() {
-
+    public UI() {
         //Gets screen size
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //Here it waits for the image to be taken
@@ -68,26 +47,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         pack();
         //Make it visible
         setVisible(true);
-
-        //Camera phase
-        /*
-        Activate camera
-        Take pictures at a good interval
-        When two in following images show good results of same kind go to next phase
-        
-         */
-        //This means that the program is running
-        classifyMode = true;
-        //while (classifyMode) {
-        phase1();
-        
-        repaint();
-        //Here it shows the alternatives
-        phase2();
-        this.repaint();
-        //Here it does... something
-
-        //}
     }
 
     /**
@@ -145,6 +104,220 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         /* Create and display the form */
     }
 
+    //Get an image on some sort
+    public void phase1() {
+        GridBagLayout g = new GridBagLayout();
+        setLayout(g);
+        GridBagConstraints con = new GridBagConstraints();
+        con = new GridBagConstraints();
+        con.gridy = 0;
+        con.gridx = 0;
+        con.gridwidth = 1;
+        con.fill = GridBagConstraints.HORIZONTAL;
+        test = new JLabel("Currently taking pictures");
+        Font f = new Font("serif", Font.PLAIN, 60);
+        test.setFont(f);
+        g.setConstraints(test, con);
+        //Adds it to the main frame
+        add(test);
+        setVisible(true);
+
+    }
+
+    
+    // Phase 2 to ask user whether the AI guessed correctly
+    public void phase2(String watsonGuess, String path) {
+        GridBagLayout g = new GridBagLayout();
+        setLayout(g);
+        GridBagConstraints con = new GridBagConstraints();
+        con = new GridBagConstraints();
+        con.gridy = 0;
+        con.gridx = 0;
+        con.gridwidth = 1;
+        con.fill = GridBagConstraints.HORIZONTAL;
+        try {
+            Image imageOfGuess = ImageIO.read(new File("src/main/java/watson_images/" + watsonGuess + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 5, (int) screenSize.getWidth() / 5, Image.SCALE_SMOOTH);
+            guessingPic=new JLabel(new ImageIcon(imageOfGuess), SwingConstants.CENTER);
+            add(guessingPic);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+       GridBagConstraints con1 = new GridBagConstraints();
+        con1 = new GridBagConstraints();
+        con1.gridy = 1;
+        con1.gridx = 0;
+        con1.gridwidth = 1;
+        test.setText("Is this the correct object?");
+        Font f = new Font("serif", Font.PLAIN, 60);
+        test.setFont(f);
+        g.setConstraints(test, con1);
+
+       GridBagConstraints con2 = new GridBagConstraints();
+        con2 = new GridBagConstraints();
+        con2.gridy = 2;
+        con2.gridx = 0;
+        con2.gridwidth = 1;
+        try {
+            Image yes = ImageIO.read(new File("buttons/yes.png")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
+            yesB = new JLabel(new ImageIcon(yes), SwingConstants.LEFT);
+            yesB.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("Mouse clicked");
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Mouse pressed");
+                    moveImage(watsonGuess,path);
+                    
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    //System.out.println(e.getLocationOnScreen());
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+
+                
+                // If Watson guessed correctly move the file to the appropriate folder for fuTURE
+                private void moveImage(String watsonGuess, String path) {
+                    String pathToNewPlace= "classes/"+watsonGuess;
+                    int numberOfFIlesInTheFolder= new File(pathToNewPlace).listFiles().length;
+                    if(numberOfFIlesInTheFolder<40){
+                        try {
+                            System.out.println("Trying to move the file");
+                            Files.move(Paths.get(path), Paths.get(pathToNewPlace+"/"+numberOfFIlesInTheFolder+".jpg"));
+                            System.out.println("Move successfull");
+                        } catch (IOException ex) {
+                            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else{
+                        System.out.println("Too many files in the folder");
+                    }
+                }
+            });
+            g.setConstraints(yesB, con2);
+            add(yesB);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        GridBagConstraints con3 = new GridBagConstraints();
+        con3 = new GridBagConstraints();
+        con3.gridy = 2;
+        con3.gridx = 2;
+        con3.gridwidth = 1;
+        try {
+            Image no = ImageIO.read(new File("buttons/no.jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
+            noB = new JLabel(new ImageIcon(no), SwingConstants.RIGHT);
+            noB.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("Mouse clicked");
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Mouse pressed");
+                    phase3();
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    //System.out.println(e.getLocationOnScreen());
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+
+            });
+            g.setConstraints(noB, con3);
+            add(noB);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Adds it to the main frame
+        setVisible(true);
+
+    }
+
+    //The phase after taking the picture
+    public void phase3() {
+        remove(noB);
+        remove(yesB);
+        remove(test);
+        remove(guessingPic);
+        
+        
+        ArrayList<String> classes = Methods.getClassifiers();
+        int arraysize = classes.size();
+        squares = new ArrayList<>();
+        for (int i = 0; i < arraysize; i++) {
+            //Configuring all the squares
+            //Creates a new square
+            Square sq = new Square(0, 0, classes.get(i));
+            //Adds the name of the class to the square
+            //sq.add(new JLabel(urltest.get(i).getName()));
+            //Adds a mouselistener for later use like clicking on it.
+            sq.addMouseListener(this);
+            //This line does not work at school but works at home
+            sq.setBackground(new Color(255, 255, 255));
+            //This can be done so that each square or something has its own path to the image
+            Image image = null;
+            try {
+                image = ImageIO.read(new File("src/main/java/watson_images/" + classes.get(i) + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
+            } catch (IOException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            sq.add(new JLabel(new ImageIcon(image), SwingConstants.CENTER));
+            squares.add(sq);
+        }
+
+        GridBagLayout g = new GridBagLayout();
+        setLayout(g);
+       GridBagConstraints con = new GridBagConstraints();
+
+        //
+        int x_axis = 0;
+        int y_axis = 0;
+
+        for (int i = 0; i < squares.size(); i++) {
+            con = new GridBagConstraints();
+            con.gridy = y_axis;
+            con.gridx = x_axis;
+            con.gridwidth = 1;
+            con.fill = GridBagConstraints.HORIZONTAL;
+
+            g.setConstraints(squares.get(i), con);
+            add(squares.get(i));
+            squares.get(i).setPreferredSize(new Dimension((int) screenSize.getWidth() / 8, (int) screenSize.getWidth() / 8));
+            squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+
+            if (x_axis == 5) {
+                x_axis = 0;
+                y_axis++;
+            } else {
+                x_axis++;
+            }
+        }
+        repaint();
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
 
@@ -157,7 +330,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //This is the magic
         Object o = e.getSource();
         //Squares.indexOf(o) gives us the object with all values.
-        System.out.println(Squares.get(Squares.indexOf(o)).co.name);
+        System.out.println(squares.get(squares.indexOf(o)).co);
 
     }
 
@@ -172,93 +345,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void mouseExited(MouseEvent e) {
-    }
-
-    //Get an image on some sort
-    public void phase1() {
-        GridBagLayout g = new GridBagLayout();
-        setLayout(g);
-        GridBagConstraints con = new GridBagConstraints();
-        con = new GridBagConstraints();
-        con.gridy = 0;
-        con.gridx = 0;
-        con.gridwidth = 1;
-        con.fill = GridBagConstraints.HORIZONTAL;
-        JLabel test = new JLabel("Currently taking pictures");
-        Font f = new Font("serif", Font.PLAIN, 60);
-        test.setFont(f);
-        g.setConstraints(test, con);
-        //Adds it to the main frame
-        add(test);
-        setVisible(true);
-
-    }
-
-    //The phase after taking the picture
-    public void phase2() {
-        ClassifiedImages test = null;
-        try {
-            test = Methods.classifyURLNoParse("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
-        } catch (IOException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        ArrayList<ClassifiedObject> urltest = Methods.JSONToArray(test);
-        //Gets the number of custom classes
-        Long arraysize = test.getCustomClasses();
-        Squares = new ArrayList<>();
-        for (int i = 0; i < arraysize; i++) {
-            //Configuring all the squares
-            //Creates a new square
-            Square sq = new Square(0, 0, urltest.get(i));
-            //Adds the name of the class to the square
-            //sq.add(new JLabel(urltest.get(i).getName()));
-            //Adds a mouselistener for later use like clicking on it.
-            sq.addMouseListener(this);
-            //This line does not work at school but works at home
-            sq.setBackground(new Color(255, 255, 255));
-            //This can be done so that each square or something has its own path to the image
-            Image image = null;
-            try {
-                image = ImageIO.read(new File("H:/GitHub/thesiswithcam/thesisWithCamera/src/main/java/watson_images/" + urltest.get(i).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
-            } catch (IOException ex) {
-                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            sq.add(new JLabel(new ImageIcon(image), SwingConstants.CENTER));
-            Squares.add(sq);
-        }
-
-        GridBagLayout g = new GridBagLayout();
-        setLayout(g);
-        GridBagConstraints con = new GridBagConstraints();
-
-        //
-        int x_axis = 0;
-        int y_axis = 0;
-
-        for (int i = 0; i < Squares.size(); i++) {
-            con = new GridBagConstraints();
-            con.gridy = y_axis;
-            con.gridx = x_axis;
-            con.gridwidth = 1;
-            con.fill = GridBagConstraints.HORIZONTAL;
-
-            g.setConstraints(Squares.get(i), con);
-            add(Squares.get(i));
-            Squares.get(i).setPreferredSize(new Dimension((int) screenSize.getWidth() / 8, (int) screenSize.getWidth() / 8));
-            Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
-            if (x_axis == 5) {
-                x_axis = 0;
-                y_axis++;
-            } else {
-                x_axis++;
-            }
-        }
-
-    }
-
-    public void phase3() {
-        System.out.println("phase 3");
     }
 
 

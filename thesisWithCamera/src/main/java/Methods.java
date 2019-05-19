@@ -1,5 +1,4 @@
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamMotionEvent;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
@@ -11,22 +10,16 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.GetClassifierO
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ListClassifiersOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.UpdateClassifierOptions;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 
@@ -50,11 +43,7 @@ public class Methods{
             .build();
 
     public static VisualRecognition service = new VisualRecognition("2018-03-19", options);
-
-    public static void main(String[] args) throws FileNotFoundException {
-        
-    }
-    
+  
     
     //For safety reasons
     public static String apikey (){
@@ -162,7 +151,12 @@ public class Methods{
         return resultArray;
     }
     
-        public static ArrayList<String> getClassifiers() {
+   /**
+    * Used method
+    * @return 
+    */    
+    
+    public static ArrayList<String> getClassifiers() {
 
         ListClassifiersOptions listClassifiersOptions = new ListClassifiersOptions.Builder()
                 .verbose(true)
@@ -177,6 +171,16 @@ public class Methods{
         return result;
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public static void getClassifierDetails(String classifier) {
 
         GetClassifierOptions getClassifierOptions = new GetClassifierOptions.Builder(classifier).build();

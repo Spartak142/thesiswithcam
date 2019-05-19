@@ -17,10 +17,10 @@ public class Square extends JPanel implements MouseListener{
     
     int x_axis;
     int y_axis;
-    ClassifiedObject co;
+    String co;
     
 
-    public Square(int x_axis, int y_axis, ClassifiedObject co) {
+    public Square(int x_axis, int y_axis, String co) {
         this.x_axis = x_axis;
         this.y_axis = y_axis;
         this.co = co;
@@ -42,11 +42,11 @@ public class Square extends JPanel implements MouseListener{
         this.y_axis = y_axis;
     }
 
-    public ClassifiedObject getCo() {
+    public String getCo() {
         return co;
     }
 
-    public void setCo(ClassifiedObject co) {
+    public void setCo(String co) {
         this.co = co;
     }
     

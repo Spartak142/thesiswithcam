@@ -4,8 +4,6 @@ import com.github.sarxos.webcam.WebcamMotionDetector;
 import com.github.sarxos.webcam.WebcamMotionEvent;
 import com.github.sarxos.webcam.WebcamMotionListener;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.ibm.watson.developer_cloud.service.security.IamOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
 import java.awt.Dimension;
@@ -15,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import static java.lang.Thread.sleep;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,15 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author robindah
- */
 public class Camera implements WebcamMotionListener, Runnable {
 
     public static Webcam webcam;
@@ -42,16 +30,17 @@ public class Camera implements WebcamMotionListener, Runnable {
     public final String testPic = "testpic";
     public File sessionImages;
     public FolderZipper zippah = new FolderZipper();
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+    DateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
     public static volatile ArrayList<ClassifiedObject> arrayOfResults;
     public static volatile boolean temp;
+    private static String imageName;
 
     @Override
     public void motionDetected(WebcamMotionEvent wme) {
         //taking a pic and putting it into the folder for pics.
         System.out.println(sessionImages.listFiles().length);
         BufferedImage image = webcam.getImage();
-        String imageName = "./sessionImages/" + "sessionImage_" + dateFormat.format(new Date()) + ".png";
+        imageName = "sessionImages/" + "sessionImage_" + dateFormat.format(new Date()) + ".png";
         System.out.println(imageName);
         //i++;
         try {
@@ -82,11 +71,10 @@ public class Camera implements WebcamMotionListener, Runnable {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
             System.out.println("Something is wrong with zipping");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-        if(arrayOfResults.size() > 1){
+        if (arrayOfResults.size() > 1) {
             acceptedClassification();
         }
         //System.out.println(arrayOfResults.toString());
@@ -95,14 +83,14 @@ public class Camera implements WebcamMotionListener, Runnable {
 
     //This checks if the past 2 values are the same
     public static void acceptedClassification() {
-        double a = arrayOfResults.get(arrayOfResults.size()-1).getValue();
-        double b = arrayOfResults.get(arrayOfResults.size()-2).getValue();
-        double diff = Math.abs(a-b);
-        System.out.println("abs: " + diff + "a: " + arrayOfResults.get(arrayOfResults.size()-1).toString()  + ",b: " + arrayOfResults.get(arrayOfResults.size()-2).toString());
-        if(diff < 0.1 && (arrayOfResults.get(arrayOfResults.size()-1).getName().equals(arrayOfResults.get(arrayOfResults.size()-2).getName()))){
-           System.out.println("temp is true now");
+        double a = arrayOfResults.get(arrayOfResults.size() - 1).getValue();
+        double b = arrayOfResults.get(arrayOfResults.size() - 2).getValue();
+        double diff = Math.abs(a - b);
+        System.out.println("abs: " + diff + "a: " + arrayOfResults.get(arrayOfResults.size() - 1).toString() + ",b: " + arrayOfResults.get(arrayOfResults.size() - 2).toString());
+        if (diff < 0.1 && (arrayOfResults.get(arrayOfResults.size() - 1).getName().equals(arrayOfResults.get(arrayOfResults.size() - 2).getName()))) {
+            System.out.println("temp is true now");
             temp = true;
-        }else{
+        } else {
             temp = false;
         }
     }
@@ -116,7 +104,7 @@ public class Camera implements WebcamMotionListener, Runnable {
             new Dimension(2000, 1000),
             new Dimension(1000, 500),};
         //Webcam initialisation
-        webcam = Webcam.getWebcams().get(1);
+        webcam = Webcam.getWebcams().get(0);
         webcam.setCustomViewSizes(nonStandardResolutions);
         webcam.setViewSize(WebcamResolution.HD720.getSize());
         webcam.open();
@@ -130,13 +118,18 @@ public class Camera implements WebcamMotionListener, Runnable {
         detector.setInterval(200); // one check per 1500 ms
         detector.addMotionListener(this);
         detector.start();
+        UI userInterraction;
+        temp = false;
 
-        //while(arrayOfResults.size() < 2) {
-            temp = false;
-            while(!temp){
-                
-            }
-        //}
+        userInterraction = new UI();
+        userInterraction.phase1();
+        userInterraction.repaint();
+        while (!temp) {
+
+        }
+        userInterraction.phase2(arrayOfResults.get(arrayOfResults.size() - 1).getName(), imageName);
+        userInterraction.repaint();
+
         System.out.println("JAAAAAAAA");
         detector.stop();
         webcam.close();

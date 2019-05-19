@@ -62,11 +62,11 @@ public class Main implements WebcamMotionListener {
         System.out.println(imgName);
         i++;
         try {
-            ImageIO.write(image, "PNG", new File(imgName));
+            ImageIO.write(image, "JPG", new File(imgName));
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (i == 3) {
+        if (i == 50) {
             pictureRound();
         }
 

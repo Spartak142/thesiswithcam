@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-public class Main implements WebcamMotionListener {
+public class Main {
     public static ScheduledThreadPoolExecutor eventPool;
     public static boolean waitFor2;
 
@@ -81,8 +81,21 @@ public class Main implements WebcamMotionListener {
 
     public void run() {/*empty*/}
 
-    @Override
-    public void motionDetected(WebcamMotionEvent wme) {/*empty*/}
+  
+        
+    /**
+     * initialise the folders
+     */
+    private static void initialiseFolders() {
+         //Creates folders
+        ArrayList<String> classes = Methods.getClassifiers();         
+        dir.mkdir(); 
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println(classes.get(i));
+          File classFolder=  new File("classes/" + classes.get(i));
+          classFolder.mkdir();
+        }
+    }
 
 }
 

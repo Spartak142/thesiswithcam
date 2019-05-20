@@ -38,14 +38,6 @@ public class Camera implements WebcamMotionListener, Runnable {
     public void motionDetected(WebcamMotionEvent wme) {
         //previous and current taken picture.
         previous = current;
-        
-        /*Path source = Paths.get("sessionImages/current.png");
-        try {
-            Files.move(source, source.resolveSibling("previous.png"));
-        } catch (IOException ex) {
-            Logger.getLogger(Camera.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-
 
         //taking a pic and putting it into the folder for pics.
         BufferedImage image = webcam.getImage();
@@ -70,10 +62,6 @@ public class Camera implements WebcamMotionListener, Runnable {
             ClassifiedImages result = Methods.service.classify(classifyOptions).execute();
             current = Methods.JSONToArray(result).get(0);
 
-            //THIs has to be done for each class
-            //if (sessionImages.listFiles().length > 10) {
-            //zippah.zipFolder("sessionImages", "zipped");
-            //}
             if (previous != null) {
                 acceptedClassification();
 
@@ -89,8 +77,6 @@ public class Camera implements WebcamMotionListener, Runnable {
         } catch (RuntimeException ex) {
             System.out.println(ex.toString());
         }
-
-        //System.out.println(arrayOfResults.toString());
     }
 
     //This checks if the past 2 values are the same
@@ -106,7 +92,6 @@ public class Camera implements WebcamMotionListener, Runnable {
             temp = true;
         }
     }
-
 
     @Override
     public void run() {

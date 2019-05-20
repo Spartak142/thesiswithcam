@@ -23,15 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author robindah
- */
 public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     //This will be the amount of result from the classifier, should be a fixed number ideally since the amount of classes wont increase, currently 24 classes 
@@ -44,30 +35,34 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public static String watsonGuess;
     public static ArrayList<ClassifiedObject> resultFromCamera;
     String fileName = "stats.txt";
+    private volatile Thread thisUIThread;
+
 
     public UI() throws IOException, InterruptedException {
         //Added everything in run();
+        thisUIThread = Thread.currentThread();
+
     }
 
     @Override
     public void run() {
-            watsonGuess = null;
-            resultFromCamera = null;
-            phase1 = new ArrayList<>();
-            phase2 = new ArrayList<>();
-            phase3 = new ArrayList<>();
-            //Gets screen size
-            screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            //Here it waits for the image to be taken
-            //Closes on exit
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
-            //Fullscreen
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-            //Removes the bars so looks like fullscreen
-            //setUndecorated(true);
-            //To like warp up all components.
-            //Make it visible
-           // this.setVisible(true);
+        watsonGuess = null;
+        resultFromCamera = null;
+        phase1 = new ArrayList<>();
+        phase2 = new ArrayList<>();
+        phase3 = new ArrayList<>();
+        //Gets screen size
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        //Here it waits for the image to be taken
+        //Closes on exit
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //Fullscreen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //Removes the bars so looks like fullscreen
+        //setUndecorated(true);
+        //To like warp up all components.
+        //Make it visible
+        // this.setVisible(true);
 
         try {
             runUI();
@@ -76,34 +71,34 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         } catch (IOException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
+
     }
-    
-    public void runUI() throws InterruptedException, IOException{
+
+    public void runUI() throws InterruptedException, IOException {
         Runnable Camera = new Camera();
-            Thread Camera_Thread = new Thread(Camera);
-            Camera_Thread.start();
+        Thread Camera_Thread = new Thread(Camera);
+        Camera_Thread.start();
 
-            //This phase is when the program is waiting for a valid picture to be taken
-            phase1();
-            addComponents(phase1);
+        //This phase is when the program is waiting for a valid picture to be taken
+        phase1();
+        addComponents(phase1);
 
-            synchronized (Camera_Thread) {
-                System.out.println("Waiting for Camera to complete...");
-                Camera_Thread.wait();
-            }
+        synchronized (Camera_Thread) {
+            System.out.println("Waiting for Camera to complete...");
+            Camera_Thread.wait();
+        }
 
-            //Classifies the valid image from camera
-            //test = Methods.classifyURL("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
-            System.out.println("phase 2!");
-            //Here it shows the alternatives
-            //removeComponents();
+        //Classifies the valid image from camera
+        //test = Methods.classifyURL("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
+        System.out.println("phase 2!");
+        //Here it shows the alternatives
+        //removeComponents();
 
-            phase2();
-            removeComponents(phase1);
-            addComponents(phase2);
-            System.out.println("Im ready for phase 3");
-            phase3();
+        phase2();
+        removeComponents(phase1);
+        addComponents(phase2);
+        System.out.println("Im ready for phase 3");
+        phase3();
     }
 
     /**
@@ -151,10 +146,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        /* Create and display the form */
-        //</editor-fold>
 
-        /* Create and display the form */
     }
 
     @Override
@@ -168,33 +160,26 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //e.getComponent().setBackground(Color.green);
         //This is the magic
         Object o = e.getSource();
-        //Squares.indexOf(o) gives us the object with all values.
-        //System.out.println(Squares.get(Squares.indexOf(o)).co.name);
-        //System.out.println(e.getComponent().getName());
-
         if (e.getComponent().getName().equals("yes")) {
             //Done with this session and restart
             try {
-                
+
                 //Moves image from session to classfolder
                 moveImage();
                 //restart thread.
-                Thread newUI= new Thread (new UI());
-                newUI.start();
-                Thread.currentThread().interrupt();
+                this.dispose();
+                thisUIThread = new Thread(new UI());
+                thisUIThread.start();
+
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
-        } else if (e.getComponent().getName().equals("no")) {
 
-            //Go to phase 3.
+        } else if (e.getComponent().getName().equals("no")) {
             removeComponents(phase2);
             addComponents(phase3);
-            //phase3();
         } else {
 
         }
@@ -207,7 +192,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        //System.out.println(e.getLocationOnScreen());
     }
 
     @Override
@@ -217,7 +201,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public void removeComponents(ArrayList<Component> phaseX) {
         for (Component c : phaseX) {
             this.remove(c);
-
         }
         phaseX.clear();
     }
@@ -232,25 +215,14 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //pack();
 
     }
-    public void resetConfiguration(){
+
+    public void resetConfiguration() {
         Squares.clear();
         phase1.clear();
         phase2.clear();
         phase3.clear();
         resultFromCamera.clear();
         watsonGuess = null;
-    }
-// If Watson guessed correctly move the file to the appropriate folder for fuTURE
-    private void moveImage() throws IOException {
-        String pathToNewPlace = "classes/" + watsonGuess;
-        int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
-        if (numberOfFIlesInTheFolder < 40) {
-            System.out.println("Trying to move the file");
-            Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
-            System.out.println("Move successfull");
-        } else {
-            System.out.println("Too many files in the folder");
-        }
     }
 
     //Get an image on some sort
@@ -367,9 +339,9 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         for (int i = 0; i < 6; i++) {
             //Configuring all the squares
             //Creates a new square
-            
+
             Square sq = new Square(0, 0, resultFromCamera.get(i));
-            final String className= resultFromCamera.get(i).getName();
+            final String className = resultFromCamera.get(i).getName();
             //Adds a mouselistener for later use like clicking on it.
             sq.addMouseListener(new MouseListener() {
                 @Override
@@ -378,21 +350,21 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                   try {
-                
-                //Moves image from session to classfolder
-                moveImagePhase3(className);
-                //restart thread.
-                Thread newUI= new Thread (new UI());
-                newUI.start();
-                Thread.currentThread().interrupt();
-            } catch (IOException ex) {
-                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                    
-                    
+                    try {
+
+                        //Moves image from session to classfolder
+                        moveImagePhase3(className);
+                        //restart thread.
+                        UI.this.dispose();
+                        thisUIThread = new Thread(new UI());
+                        thisUIThread.start();
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
                 }
 
                 @Override
@@ -405,7 +377,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    
+
                 }
             });
             //This line does not work at school but works at home
@@ -420,15 +392,10 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             sq.add(new JLabel(new ImageIcon(image), SwingConstants.CENTER));
             Squares.add(sq);
         }
-        //This removes all the previous components, and having it hear makes
-        //it smooth
-        //removeComponents();
-
         GridBagLayout g = new GridBagLayout();
         setLayout(g);
         GridBagConstraints con = new GridBagConstraints();
 
-        //
         int x_axis = 0;
         int y_axis = 0;
 
@@ -453,12 +420,22 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             }
         }
 
-        //setVisible(true);
     }
-    
-    private void moveImagePhase3(String possibleObject) throws IOException{
-        // If Watson guessed correctly move the file to the appropriate folder for fuTURE
-   
+
+    // If Watson guessed correctly move the file to the appropriate folder for fuTURE
+    private void moveImage() throws IOException {
+        String pathToNewPlace = "classes/" + watsonGuess;
+        int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
+        if (numberOfFIlesInTheFolder < 40) {
+            System.out.println("Trying to move the file");
+            Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
+            System.out.println("Move successfull");
+        } else {
+            System.out.println("Too many files in the folder");
+        }
+    }
+
+    private void moveImagePhase3(String possibleObject) throws IOException {
         String pathToNewPlace = "classes/" + possibleObject;
         int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
         if (numberOfFIlesInTheFolder < 40) {
@@ -468,11 +445,14 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         } else {
             System.out.println("Too many files in the folder");
         }
-    
+
     }
-    
-    private void getDataFromFile(){
-        
+
+    /**
+     * To be added
+     */
+    private void getDataFromFile() {
+
     }
 
 

@@ -17,24 +17,34 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOption
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import static java.lang.Thread.sleep;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 public class Main {
 
     public static ScheduledThreadPoolExecutor eventPool;
     public static boolean waitFor2;
     public static final File dir = new File("classes");
+    public static Path file = Paths.get("stats.txt");
+
+    private static void createFile() {
+
+        try {
+            // Create the empty file with default permissions, etc.
+            Files.createFile(file);
+        } catch (FileAlreadyExistsException x) {
+            System.out.println("file named %s"
+                    + " already exists%n");
+        } catch (IOException x) {
+            // Some other sort of failure, such as permissions.
+            System.out.println("createFile error: %s%n");
+        }
+    }
 
     // Constructor for this class that start motion detector
     public Main() throws IOException, InterruptedException {
@@ -66,6 +76,7 @@ public class Main {
         //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
         //Adds the camera as a runnaable
         //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
+        createFile();
         initialiseFolders();
         Runnable UI = new UI();
         Thread UI_Thread = new Thread(UI);

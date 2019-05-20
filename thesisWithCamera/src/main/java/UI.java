@@ -43,6 +43,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     ArrayList<Component> phase3;
     public static String watsonGuess;
     public static ArrayList<ClassifiedObject> resultFromCamera;
+    String fileName = "stats.txt";
 
     public UI() throws IOException, InterruptedException {
         //Added everything in run();
@@ -468,6 +469,10 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             System.out.println("Too many files in the folder");
         }
     
+    }
+    
+    private void getDataFromFile(){
+        
     }
 
 

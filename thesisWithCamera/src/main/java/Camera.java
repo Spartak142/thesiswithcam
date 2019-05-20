@@ -13,14 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -29,7 +23,7 @@ public class Camera implements WebcamMotionListener, Runnable {
 
     public static Webcam webcam;
     public static int i;
-    public static String classifierId = "DefaultCustomModel_1716876290";
+    public static String classifierId = "CompleteModel_35852773";
     public final String testPic = "testpic";
     public File sessionImages;
     public FolderZipper zippah = new FolderZipper();

@@ -1,5 +1,4 @@
 
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -102,7 +101,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             phase2();
             removeComponents(phase1);
             addComponents(phase2);
-            System.out.println("Im ready for pagse 3");
+            System.out.println("Im ready for phase 3");
             phase3();
     }
 
@@ -272,7 +271,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //add(test);
         phase1.add(test);
 
-        Icon icon = new ImageIcon("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\loader.gif");
+        Icon icon = new ImageIcon("src\\main\\java\\watson_images\\loader.gif");
         JLabel gif = new JLabel(icon);
 
         addWindowListener(new WindowAdapter() {
@@ -300,7 +299,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
         Image image = null;
         try {
-            image = ImageIO.read(new File("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + resultFromCamera.get(0).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 5, (int) screenSize.getWidth() / 5, Image.SCALE_SMOOTH);
+            image = ImageIO.read(new File("src\\main\\java\\watson_images\\" + resultFromCamera.get(0).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 5, (int) screenSize.getWidth() / 5, Image.SCALE_SMOOTH);
         } catch (IOException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -364,10 +363,12 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public void phase3() throws IOException {
         //Gets the number of custom classes
         Squares = new ArrayList<>();
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 6; i++) {
             //Configuring all the squares
             //Creates a new square
+            
             Square sq = new Square(0, 0, resultFromCamera.get(i));
+            final String className= resultFromCamera.get(i).getName();
             //Adds a mouselistener for later use like clicking on it.
             sq.addMouseListener(new MouseListener() {
                 @Override
@@ -376,10 +377,19 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    Object o = e.getSource();
-                    
-                    //When pressed the image from session should be moved from the session folder to the 
-                    //- correct class folder.
+                   try {
+                
+                //Moves image from session to classfolder
+                moveImagePhase3(className);
+                //restart thread.
+                Thread newUI= new Thread (new UI());
+                newUI.start();
+                Thread.currentThread().interrupt();
+            } catch (IOException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
                     
                     
                 }
@@ -402,7 +412,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //This can be done so that each square or something has its own path to the image
             Image image = null;
             try {
-                image = ImageIO.read(new File("H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\" + resultFromCamera.get(i).getName() + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
+                image = ImageIO.read(new File("src\\main\\java\\watson_images\\" + className + ".jpg")).getScaledInstance((int) screenSize.getWidth() / 9, (int) screenSize.getWidth() / 9, Image.SCALE_SMOOTH);
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -421,7 +431,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         int x_axis = 0;
         int y_axis = 0;
 
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 6; i++) {
             con = new GridBagConstraints();
             con.gridy = y_axis;
             con.gridx = x_axis;
@@ -443,6 +453,21 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         }
 
         //setVisible(true);
+    }
+    
+    private void moveImagePhase3(String possibleObject) throws IOException{
+        // If Watson guessed correctly move the file to the appropriate folder for fuTURE
+   
+        String pathToNewPlace = "classes/" + possibleObject;
+        int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
+        if (numberOfFIlesInTheFolder < 40) {
+            System.out.println("Trying to move the file");
+            Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
+            System.out.println("Move successfull");
+        } else {
+            System.out.println("Too many files in the folder");
+        }
+    
     }
 
 

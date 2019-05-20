@@ -62,13 +62,16 @@ public class Main implements WebcamMotionListener {
         }*/
 
         
-        eventPool = new ScheduledThreadPoolExecutor(3);
+        //eventPool = new ScheduledThreadPoolExecutor(3);
 
         //Adds the UI as a runnable
-        eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
+        //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
         //Adds the camera as a runnaable
         //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
 
+        Runnable UI = new UI();
+        Thread UI_Thread = new Thread(UI);
+        UI_Thread.start();
 
         
     }

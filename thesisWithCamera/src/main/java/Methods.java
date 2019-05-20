@@ -58,7 +58,7 @@ public class Methods{
     
     //For safety reasons
     public static String apikey (){
-        return "sP83C9a-mEePlb5-4banZN1EYLSbxavGnpYmOLYGl-v7";
+        return "O3x33LreolcRdA9vPJBk-0V0pzcAqCWC0a2tlGqs31im";
     }
 
     public static ArrayList<ClassifiedObject> classifyImage(String path) throws FileNotFoundException {
@@ -69,7 +69,7 @@ public class Methods{
                 .imagesFile(imagesStream)
                 .imagesFilename("download.jpg")
                 .threshold((float) 0)
-                .classifierIds(Arrays.asList("DefaultCustomModel_1716876290"))
+                .classifierIds(Arrays.asList("CompleteModel_35852773"))
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
@@ -93,7 +93,7 @@ public class Methods{
                 .imagesFile(imagesStream)
                 .imagesFilename("URL")
                 .threshold((float) 0)
-                .classifierIds(Arrays.asList("DefaultCustomModel_1716876290"))
+                .classifierIds(Arrays.asList("CompleteModel_35852773"))
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
@@ -117,7 +117,7 @@ public class Methods{
                 .imagesFile(imagesStream)
                 .imagesFilename("URL")
                 .threshold((float) 0)
-                .classifierIds(Arrays.asList("DefaultCustomModel_1716876290"))
+                .classifierIds(Arrays.asList("CompleteModel_35852773"))
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
@@ -141,7 +141,7 @@ public class Methods{
                 .imagesFile(imagesStream)
                 .imagesFilename("URL")
                 .threshold((float) 0)
-                .classifierIds(Arrays.asList("DefaultCustomModel_1716876290"))
+                .classifierIds(Arrays.asList("CompleteModel_35852773"))
                 .build();
 
         ClassifiedImages result = service.classify(classifyOptions).execute();
@@ -187,7 +187,7 @@ public class Methods{
         public static void updateClassifier() throws FileNotFoundException {
         
         UpdateClassifierOptions updateClassifierOptions = new UpdateClassifierOptions.Builder()
-                .classifierId("DefaultCustomModel_1716876290")
+                .classifierId("CompleteModel_35852773")
                 //.addPositiveExamples("Carrot", new File("./Carrots.zip"))
                 //.negativeExamples(new File("D:/hand.jpg"))
                 .build();

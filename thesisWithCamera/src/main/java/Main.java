@@ -31,8 +31,10 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Main {
+
     public static ScheduledThreadPoolExecutor eventPool;
     public static boolean waitFor2;
+    public static final File dir = new File("classes");
 
     // Constructor for this class that start motion detector
     public Main() throws IOException, InterruptedException {
@@ -44,9 +46,7 @@ public class Main {
         //A Thread for UI
         //A Thread for gathering Data for faster executions/ getting camera. 
         //A Thread for traning the AI. 
-        
     }
-
 
     public static void main(String[] args) throws IOException, InterruptedException {
         //Creates folders
@@ -56,44 +56,37 @@ public class Main {
             new File("classes/" + classes.get(i)).mkdir();
             
         }*/
-        /*File dir = new File("classes");
+ /*File dir = new File("classes");
         for(File f : dir.listFiles()){
             System.out.println("Foldername: " + f.getName() + ", Files: " + f.listFiles().length);
         }*/
 
-        
         //eventPool = new ScheduledThreadPoolExecutor(3);
-
         //Adds the UI as a runnable
         //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
         //Adds the camera as a runnaable
         //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
-
+        initialiseFolders();
         Runnable UI = new UI();
         Thread UI_Thread = new Thread(UI);
         UI_Thread.start();
-        
-   
-                
 
-        
     }
 
-    public void run() {/*empty*/}
+    public void run() {/*empty*/
+    }
 
-  
-        
     /**
      * initialise the folders
      */
     private static void initialiseFolders() {
-         //Creates folders
-        ArrayList<String> classes = Methods.getClassifiers();         
-        dir.mkdir(); 
+        //Creates folders
+        ArrayList<String> classes = Methods.getClassifiers();
+        dir.mkdir();
         for (int i = 0; i < classes.size(); i++) {
             System.out.println(classes.get(i));
-          File classFolder=  new File("classes/" + classes.get(i));
-          classFolder.mkdir();
+            File classFolder = new File("classes/" + classes.get(i));
+            classFolder.mkdir();
         }
     }
 

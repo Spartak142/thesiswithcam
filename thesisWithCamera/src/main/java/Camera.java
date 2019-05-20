@@ -13,6 +13,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +33,6 @@ public class Camera implements WebcamMotionListener, Runnable {
     public final String testPic = "testpic";
     public File sessionImages;
     public FolderZipper zippah = new FolderZipper();
-    DateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
     public static volatile ArrayList<ClassifiedObject> arrayOfResults;
     public static volatile boolean temp;
     private static String imageName;
@@ -40,14 +42,20 @@ public class Camera implements WebcamMotionListener, Runnable {
 
     @Override
     public void motionDetected(WebcamMotionEvent wme) {
+        //previous and current taken picture.
         previous = current;
+        
+        /*Path source = Paths.get("sessionImages/current.png");
+        try {
+            Files.move(source, source.resolveSibling("previous.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(Camera.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+
 
         //taking a pic and putting it into the folder for pics.
-        System.out.println(sessionImages.listFiles().length);
         BufferedImage image = webcam.getImage();
-        imageName = "sessionImages/" + "sessionImage_" + dateFormat.format(new Date()) + ".png";
-        System.out.println(imageName);
-        //i++;
+        imageName = "sessionImages/current.png";
         try {
             ImageIO.write(image, "PNG", new File(imageName));
         } catch (IOException ex) {
@@ -84,7 +92,7 @@ public class Camera implements WebcamMotionListener, Runnable {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
             System.out.println("Something is wrong with zipping");
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             System.out.println(ex.toString());
         }
 
@@ -105,10 +113,6 @@ public class Camera implements WebcamMotionListener, Runnable {
         }
     }
 
-    public String Camera() {
-        run();
-        return "asd";
-    }
 
     @Override
     public void run() {

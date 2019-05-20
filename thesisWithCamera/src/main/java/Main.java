@@ -72,6 +72,9 @@ public class Main implements WebcamMotionListener {
         Runnable UI = new UI();
         Thread UI_Thread = new Thread(UI);
         UI_Thread.start();
+        
+   
+                
 
         
     }

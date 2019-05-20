@@ -39,7 +39,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public ArrayList<Square> Squares;
     public Dimension screenSize;
     boolean classifyMode;
-    ArrayList<Component> VisableComponents;
     ArrayList<Component> phase1;
     ArrayList<Component> phase2;
     ArrayList<Component> phase3;
@@ -52,10 +51,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void run() {
-        try {
             watsonGuess = null;
             resultFromCamera = null;
-            VisableComponents = new ArrayList<>();
             phase1 = new ArrayList<>();
             phase2 = new ArrayList<>();
             phase3 = new ArrayList<>();
@@ -69,11 +66,21 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //Removes the bars so looks like fullscreen
             //setUndecorated(true);
             //To like warp up all components.
-            pack();
             //Make it visible
-            this.setVisible(true);
+           // this.setVisible(true);
 
-            Runnable Camera = new Camera();
+        try {
+            runUI();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
+    
+    public void runUI() throws InterruptedException, IOException{
+        Runnable Camera = new Camera();
             Thread Camera_Thread = new Thread(Camera);
             Camera_Thread.start();
 
@@ -92,19 +99,11 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //Here it shows the alternatives
             //removeComponents();
 
-            
-
             phase2();
             removeComponents(phase1);
             addComponents(phase2);
             System.out.println("Im ready for pagse 3");
             phase3();
-            //}
-        } catch (InterruptedException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -166,7 +165,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     @Override
     public void mousePressed(MouseEvent e) {
         //TEMPORARLY just to see that it works
-        e.getComponent().setBackground(Color.green);
+        //e.getComponent().setBackground(Color.green);
         //This is the magic
         Object o = e.getSource();
         //Squares.indexOf(o) gives us the object with all values.
@@ -174,8 +173,22 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //System.out.println(e.getComponent().getName());
 
         if (e.getComponent().getName().equals("yes")) {
-
             //Done with this session and restart
+            try {
+                
+                //Moves image from session to classfolder
+                moveImage();
+                //restart thread.
+                Thread newUI= new Thread (new UI());
+                newUI.start();
+                Thread.currentThread().interrupt();
+            } catch (IOException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
         } else if (e.getComponent().getName().equals("no")) {
 
             //Go to phase 3.
@@ -219,21 +232,21 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //pack();
 
     }
-
-    /*public void setVisibleComponents() {
-        for (Component c : noPhase) {
-            c.setVisible(classifyMode);
-            VisableComponents.add(c);
-        }
-        noPhase.clear();
-    }*/
+    public void resetConfiguration(){
+        Squares.clear();
+        phase1.clear();
+        phase2.clear();
+        phase3.clear();
+        resultFromCamera.clear();
+        watsonGuess = null;
+    }
 // If Watson guessed correctly move the file to the appropriate folder for fuTURE
-    private void moveImage(String watsonGuess, String path) throws IOException {
+    private void moveImage() throws IOException {
         String pathToNewPlace = "classes/" + watsonGuess;
         int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
         if (numberOfFIlesInTheFolder < 40) {
             System.out.println("Trying to move the file");
-            Files.move(Paths.get(path), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".jpg"));
+            Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
             System.out.println("Move successfull");
         } else {
             System.out.println("Too many files in the folder");
@@ -356,7 +369,34 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             //Creates a new square
             Square sq = new Square(0, 0, resultFromCamera.get(i));
             //Adds a mouselistener for later use like clicking on it.
-            sq.addMouseListener(this);
+            sq.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    Object o = e.getSource();
+                    
+                    //When pressed the image from session should be moved from the session folder to the 
+                    //- correct class folder.
+                    
+                    
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    
+                }
+            });
             //This line does not work at school but works at home
             sq.setBackground(new Color(255, 255, 255));
             //This can be done so that each square or something has its own path to the image

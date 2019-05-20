@@ -88,21 +88,21 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             phase1();
             addComponents(phase1);
 
+            //This is done becuase we are waiting for the camera to take
+            //pictures of the object, once that's done this will continue
             synchronized (Camera_Thread) {
                 System.out.println("Waiting for Camera to complete...");
                 Camera_Thread.wait();
             }
 
             //Classifies the valid image from camera
-            //test = Methods.classifyURL("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
-            System.out.println("phase 2!");
-            //Here it shows the alternatives
-            //removeComponents();
-
+            System.out.println("Phase 2");
             phase2();
             removeComponents(phase1);
             addComponents(phase2);
-            System.out.println("Im ready for phase 3");
+            
+            //Will be visible after pressing the "NO" button.
+            System.out.println("Phase 3");
             phase3();
     }
 
@@ -164,14 +164,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        //TEMPORARLY just to see that it works
-        //e.getComponent().setBackground(Color.green);
-        //This is the magic
-        Object o = e.getSource();
-        //Squares.indexOf(o) gives us the object with all values.
-        //System.out.println(Squares.get(Squares.indexOf(o)).co.name);
-        //System.out.println(e.getComponent().getName());
-
         if (e.getComponent().getName().equals("yes")) {
             //Done with this session and restart
             try {
@@ -187,18 +179,13 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
+     
         } else if (e.getComponent().getName().equals("no")) {
 
             //Go to phase 3.
             removeComponents(phase2);
             addComponents(phase3);
-            //phase3();
-        } else {
-
         }
-
     }
 
     @Override
@@ -207,7 +194,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        //System.out.println(e.getLocationOnScreen());
     }
 
     @Override
@@ -217,7 +203,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     public void removeComponents(ArrayList<Component> phaseX) {
         for (Component c : phaseX) {
             this.remove(c);
-
         }
         phaseX.clear();
     }
@@ -420,15 +405,11 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             sq.add(new JLabel(new ImageIcon(image), SwingConstants.CENTER));
             Squares.add(sq);
         }
-        //This removes all the previous components, and having it hear makes
-        //it smooth
-        //removeComponents();
-
+        
         GridBagLayout g = new GridBagLayout();
         setLayout(g);
         GridBagConstraints con = new GridBagConstraints();
 
-        //
         int x_axis = 0;
         int y_axis = 0;
 
@@ -440,7 +421,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             con.fill = GridBagConstraints.HORIZONTAL;
 
             g.setConstraints(Squares.get(i), con);
-            //add(Squares.get(i));
             phase3.add(Squares.get(i));
             Squares.get(i).setPreferredSize(new Dimension((int) screenSize.getWidth() / 8, (int) screenSize.getWidth() / 8));
             Squares.get(i).setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
@@ -452,8 +432,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 x_axis++;
             }
         }
-
-        //setVisible(true);
     }
     
     private void moveImagePhase3(String possibleObject) throws IOException{

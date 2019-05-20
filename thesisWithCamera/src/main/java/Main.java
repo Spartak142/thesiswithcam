@@ -5,17 +5,6 @@
  */
 
 import java.io.IOException;
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamMotionDetector;
-import com.github.sarxos.webcam.WebcamMotionEvent;
-import com.github.sarxos.webcam.WebcamMotionListener;
-import com.github.sarxos.webcam.WebcamResolution;
-import com.ibm.watson.developer_cloud.service.security.IamOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -31,6 +20,8 @@ public class Main {
     public static boolean waitFor2;
     public static final File dir = new File("classes");
     public static Path file = Paths.get("stats.txt");
+
+    public static int amountOfClasses = 52;
 
     private static void createFile() {
 
@@ -49,33 +40,9 @@ public class Main {
     // Constructor for this class that start motion detector
     public Main() throws IOException, InterruptedException {
 
-        //ArrayList<ClassifiedObject> test = Methods.classifyImage(path);
-        //ArrayList<ClassifiedObject> urltest = Methods.classifyURL("https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_91e6ebd6-fb26-4320-bc37-2003de8b54ce.jpg");
-        //ArrayList<ClassifiedObject> cameratest = Methods.classifyCamera();
-        //This is a pool of threads that are going to be used
-        //A Thread for UI
-        //A Thread for gathering Data for faster executions/ getting camera. 
-        //A Thread for traning the AI. 
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        //Creates folders
-        /*ArrayList<String> classes = Methods.getClassifiers();
-        for (int i = 0; i < classes.size(); i++) {
-            System.out.println(classes.get(i));
-            new File("classes/" + classes.get(i)).mkdir();
-            
-        }*/
- /*File dir = new File("classes");
-        for(File f : dir.listFiles()){
-            System.out.println("Foldername: " + f.getName() + ", Files: " + f.listFiles().length);
-        }*/
-
-        //eventPool = new ScheduledThreadPoolExecutor(3);
-        //Adds the UI as a runnable
-        //eventPool.schedule(new UI(), 0, TimeUnit.SECONDS);
-        //Adds the camera as a runnaable
-        //eventPool.schedule(new Camera(), 0, TimeUnit.SECONDS);
         createFile();
         initialiseFolders();
         Runnable UI = new UI();
@@ -91,13 +58,15 @@ public class Main {
      * initialise the folders
      */
     private static void initialiseFolders() {
-        //Creates folders
-        ArrayList<String> classes = Methods.getClassifiers();
-        dir.mkdir();
-        for (int i = 0; i < classes.size(); i++) {
-            System.out.println(classes.get(i));
-            File classFolder = new File("classes/" + classes.get(i));
-            classFolder.mkdir();
+        //Checks if all folders exist
+        if (dir.listFiles().length != amountOfClasses) {
+            //Creates folders
+            ArrayList<String> classes = Methods.getClassifiers();
+            dir.mkdir();
+            for (int i = 0; i < classes.size(); i++) {
+                File classFolder = new File("classes/" + classes.get(i));
+                classFolder.mkdir();
+            }
         }
     }
 

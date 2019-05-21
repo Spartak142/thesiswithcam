@@ -103,7 +103,7 @@ public class Camera implements WebcamMotionListener, Runnable {
                 new Dimension(2000, 1000),
                 new Dimension(1000, 500),};
             //Webcam initialisation
-            webcam = Webcam.getWebcams().get(1);
+            webcam = Webcam.getWebcams().get(0);
             webcam.setCustomViewSizes(nonStandardResolutions);
             webcam.setViewSize(WebcamResolution.HD720.getSize());
             webcam.open();

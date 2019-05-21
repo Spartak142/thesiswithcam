@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -37,8 +38,15 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     String fileName = "stats.txt";
     private volatile Thread thisUIThread;
     String fullPath = "H:\\GitHub\\thesiswithcam\\thesisWithCamera\\src\\main\\java\\watson_images\\";
-
-
+    String classesPath = "H:\\GitHub\\thesiswithcam\\thesisWithCamera\\classes\\";
+    String trainedPath = "H:\\GitHub\\thesiswithcam\\thesisWithCamera\\trainedClasses\\";
+    FolderZipper zippah = new FolderZipper();
+    
+    public static String destination;
+    public static String source;
+    public static String phase3Image;
+    
+    
     public UI() throws IOException, InterruptedException {
         //Added everything in run();
         thisUIThread = Thread.currentThread();
@@ -90,10 +98,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         }
 
         //Classifies the valid image from camera
-        //test = Methods.classifyURL("https://i5.walmartimages.ca/images/Large/337/846/6000197337846.jpg");
         System.out.println("phase 2!");
         //Here it shows the alternatives
-        //removeComponents();
 
         phase2();
         removeComponents(phase1);
@@ -176,6 +182,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (e.getComponent().getName().equals("no")) {
@@ -245,7 +253,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
         //add(test);
         phase1.add(test);
 
-        Icon icon = new ImageIcon(fullPath+"loader.gif");
+        Icon icon = new ImageIcon(fullPath + "loader.gif");
         JLabel gif = new JLabel(icon);
 
         addWindowListener(new WindowAdapter() {
@@ -352,7 +360,6 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     try {
-
                         //Moves image from session to classfolder
                         moveImagePhase3(className);
                         //restart thread.
@@ -363,6 +370,8 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                     } catch (IOException ex) {
                         Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (InterruptedException ex) {
+                        Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
                         Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
@@ -424,7 +433,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     }
 
     // If Watson guessed correctly move the file to the appropriate folder for fuTURE
-    private void moveImage() throws IOException {
+    private void moveImage() throws IOException, Exception {
         String pathToNewPlace = "classes/" + watsonGuess;
         int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
         if (numberOfFIlesInTheFolder < 40) {
@@ -432,19 +441,25 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
             Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
             System.out.println("Move successfull");
         } else {
-            System.out.println("Too many files in the folder");
+            source = pathToNewPlace;
+            
+            zipFolder();
         }
     }
 
-    private void moveImagePhase3(String possibleObject) throws IOException {
+    private void moveImagePhase3(String possibleObject) throws IOException, Exception {
         String pathToNewPlace = "classes/" + possibleObject;
         int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
-        if (numberOfFIlesInTheFolder < 40) {
+        if (numberOfFIlesInTheFolder > 40) {
+            //Here it should zip the files and send it to watson
+          
+            zipFolder();
+
+        } else {
+
             System.out.println("Trying to move the file");
             Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
             System.out.println("Move successfull");
-        } else {
-            System.out.println("Too many files in the folder");
         }
 
     }
@@ -454,6 +469,16 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
      */
     private void getDataFromFile() {
 
+    }
+
+    private synchronized void zipFolder() throws Exception {
+//Here it should zip the files and send it to watson
+        source = classesPath + watsonGuess;
+        destination = trainedPath + watsonGuess + "//" + watsonGuess + ".zip";
+        
+        Runnable FolderZipper = new FolderZipper();
+        Thread FolderZipper_Thread = new Thread(FolderZipper);
+        FolderZipper_Thread.start();
     }
 
 

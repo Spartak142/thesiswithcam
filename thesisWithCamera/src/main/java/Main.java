@@ -11,19 +11,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Queue;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main {
 
-    public static ScheduledThreadPoolExecutor eventPool;
-    public static boolean waitFor2;
     public static final File dir = new File("classes");
     public static Path file = Paths.get("stats.txt");
     public static JSON json;
+    //This is used for updating classes. 
+    public static volatile Queue<TrainedObject> QueuingClasses;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
+        QueuingClasses = null;
         createFile();
         initialiseFolders();
         Runnable UI = new UI();

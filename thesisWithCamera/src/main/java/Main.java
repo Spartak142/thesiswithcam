@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
@@ -30,7 +31,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-       
+
         createFile();
         initialiseFolders();
         Runnable UI = new UI();
@@ -39,18 +40,19 @@ public class Main {
 
     }
 
-
     /**
      * initialise the folders
      */
     private static void initialiseFolders() {
-        //Creates folders
-        ArrayList<String> classes = Methods.getClassifiers();
-        dir.mkdir();
-        for (int i = 0; i < classes.size(); i++) {
-            System.out.println(classes.get(i));
-            File classFolder = new File("classes/" + classes.get(i));
-            classFolder.mkdir();
+        if (dir.listFiles().length != 52) {
+            //Creates folders
+            ArrayList<String> classes = Methods.getClassifiers();
+            dir.mkdir();
+            for (int i = 0; i < classes.size(); i++) {
+                System.out.println(classes.get(i));
+                File classFolder = new File("classes/" + classes.get(i));
+                classFolder.mkdir();
+            }
         }
     }
 

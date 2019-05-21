@@ -71,10 +71,9 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
 
         try {
             runUI();
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException | IOException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("problem with UI");
         }
 
     }
@@ -178,15 +177,22 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 //Moves image from session to classfolder
                 moveImage(watsonGuess);
                 //restart thread.
-                this.dispose();
+                
+                
                 thisUIThread = new Thread(new UI());
                 thisUIThread.start();
+                
+
+
+                
 
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Throwable ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -437,7 +443,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
     private void moveImage(String possibleObject) throws IOException, Exception {
         String pathToNewPlace = "classes/" + possibleObject;
         int numberOfFIlesInTheFolder = new File(pathToNewPlace).listFiles().length;
-        if (numberOfFIlesInTheFolder < 5) {
+        if (numberOfFIlesInTheFolder < 40) {
             System.out.println("Trying to move the file");
             Files.move(Paths.get("sessionImages/current.png"), Paths.get(pathToNewPlace + "/" + numberOfFIlesInTheFolder + ".png"));
             System.out.println("Move successfull");

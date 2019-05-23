@@ -4,7 +4,17 @@ import java.util.Comparator;
 public class ClassifiedObject {
     String name;
     double value;
+    int counter;
 
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    
     public ClassifiedObject(String name, double value) {
         this.name = name;
         this.value = value;

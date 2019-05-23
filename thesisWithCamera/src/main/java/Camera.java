@@ -7,17 +7,26 @@ import com.github.sarxos.webcam.WebcamResolution;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 
 /*
 This project used the Generic Webcam Java API created by sarxos
@@ -27,12 +36,8 @@ Copyright (C) 2012 - 2015 Bartosz Firyn (https://github.com/sarxos)
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-
-
-
-public class Camera implements WebcamMotionListener, Runnable {
+ */
+public class Camera extends javax.swing.JFrame implements WebcamMotionListener, Runnable {
 
     public static Webcam webcam;
     public static int i;
@@ -108,7 +113,18 @@ public class Camera implements WebcamMotionListener, Runnable {
 
     @Override
     public void run() {
-        synchronized (this) {
+            //Gets screen size
+        //Here it waits for the image to be taken
+        //Closes on exit
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //Fullscreen
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //Removes the bars so looks like fullscreen
+        //setUndecorated(true);
+        //To like warp up all components.
+        //Make it visible
+        // this.setVisible(true);
+            System.out.println("asdasd");
             arrayOfResults = new ArrayList<ClassifiedObject>();
 
             Dimension[] nonStandardResolutions = new Dimension[]{
@@ -122,25 +138,34 @@ public class Camera implements WebcamMotionListener, Runnable {
             webcam.open();
 
             //For naming the pictures
-            sessionImages = new File("sessionImages");
+            sessionImages = new File("Experiment 1");
             sessionImages.mkdir();
 
-            // Start and keep the program open
-            WebcamMotionDetector detector = new WebcamMotionDetector(webcam);
-            detector.setInterval(200); // one check per 1500 ms
-            detector.addMotionListener(this);
-            detector.start();
-            temp = false;
-            while (!temp) {
+            BufferedImage image = webcam.getImage();
+
+            JLabel a = new JLabel(new ImageIcon(image), SwingConstants.CENTER);
+            a.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            add(a);
+            setVisible(true);
+            while (true) {
+                try {
+                    System.out.println("Hey");
+                    sleep(1000);
+                    image = webcam.getImage();
+                    remove(a);
+                    a = new JLabel(new ImageIcon(image), SwingConstants.CENTER);
+                    a.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+                    add(a);
+                    setVisible(true);
+                     repaint();
+
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Camera.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
 
-            detector.stop();
-            webcam.close();
-
-            System.out.println("Camera done");
-            Thread.currentThread().interrupt();
-        }
+        
     }
 
 }

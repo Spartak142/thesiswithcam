@@ -19,6 +19,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+/*
+This project used the Generic Webcam Java API created by sarxos
+
+Copyright (C) 2012 - 2015 Bartosz Firyn (https://github.com/sarxos)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
+
+
+
+
 public class Camera implements WebcamMotionListener, Runnable {
 
     public static Webcam webcam;

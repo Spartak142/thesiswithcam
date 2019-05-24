@@ -39,7 +39,7 @@ public class Main {
      * initialise the folders
      */
     private static void initialiseFolders() {
-        if (dir.listFiles().length != 52) {
+        
             //Creates folders
             ArrayList<String> classes = Methods.getClassifiers();
             dir.mkdir();
@@ -48,7 +48,7 @@ public class Main {
                 File classFolder = new File("classes/" + classes.get(i));
                 classFolder.mkdir();
             }
-        }
+        
     }
 
     private static void createFile() {

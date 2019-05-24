@@ -69,7 +69,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
     public static String imageName;
     public static File experimentFolder;
     public static Webcam webcam;
-    public static String experimentName = "experiment_1";
+    public static String experimentName = "experiment_2";
     public static int filescounter = 0;
     public static ArrayList<ClassifiedObject> results = null;
 
@@ -88,13 +88,15 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
 
     @Override
     public void run() {
+        initialiseFolders();
+        results = new ArrayList<>();
         //Gets screen size
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //Here it waits for the image to be taken
         //Closes on exit
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         //Fullscreen
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setSize(new Dimension(400, 400));
         //Removes the bars so looks like fullscreen
         //setUndecorated(true);
         //To like warp up all components.
@@ -113,7 +115,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
         experimentFolder = new File(experimentName);
         experimentFolder.mkdir();
         this.addMouseListener(this);
-        JLabel a = new JLabel("yes");
+        JLabel a = new JLabel("yes", SwingConstants.CENTER);
         a.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         add(a);
         setVisible(true);
@@ -135,10 +137,25 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
             }
 
         }*/
+        
+        
+        
 
     }
 
- 
+     private static void initialiseFolders() {
+        
+            //Creates folders
+            ArrayList<String> classes = Methods.getClassifiers();
+            File dir = new File(experimentName);
+            dir.mkdir();
+            for (int i = 0; i < classes.size(); i++) {
+                System.out.println(classes.get(i));
+                File classFolder = new File(experimentName + "/" + classes.get(i));
+                classFolder.mkdir();
+            }
+        
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -222,8 +239,19 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
             ClassifiedObject current = Methods.JSONToArray(result).get(0);
             String currentName = Methods.JSONToArray(result).get(0).getName();
             imageName = experimentName + "/" + current;
-            Files.move(Paths.get(experimentName + "/image.png"), Paths.get(experimentName + "/" + currentName + filescounter + ".png"));
-
+            
+            /*File currentDir = new File(imageName);
+            if(!currentDir.exists()){
+                System.out.println(current + " folder does not exist");
+                File newDir = new File(currentName);
+                newDir.mkdir();
+            }
+            */
+            
+            Files.move(Paths.get(experimentName + "/image.png"), Paths.get(experimentName + "/" + currentName + "/" + currentName + filescounter + ".png"));
+            
+            results.add(current);
+            /*
             for(ClassifiedObject co : results){
                 if(co.name.equals(current)){
                     co.counter++;
@@ -232,7 +260,7 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
                     results.add(current);
                     
                 }
-            }
+            }*/
             
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -241,6 +269,9 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable, A
         
         filescounter++;
         System.out.println("Image taken!");
+        
+        
+        
     }
 
     @Override

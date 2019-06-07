@@ -182,9 +182,19 @@ public class UI extends javax.swing.JFrame implements MouseListener, Runnable {
                 thisUIThread = new Thread(new UI());
                 thisUIThread.start();
                 
-
-
+                /*this.getContentPane().removeAll();
+                this.repaint();
+                //THIS SHIT WORKS BUT NOT WITH UI
+                //Everything else works except for runUI()
+                //Can even call phase1() and display all of that. 
+                //The problem is with runUI
+                phase1();
+                addComponents(phase1);
+                setVisible(true);
                 
+                removeComponents(phase2);
+
+                */
 
             } catch (IOException ex) {
                 Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
